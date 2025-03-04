@@ -1,0 +1,46 @@
+yolov10:
+  version: m
+  normalize_type: yolo
+  load_model_type: yolo
+  task_type: tracking
+
+  input_width: 1280
+  input_height: 736
+
+  bpp: 8
+  box_threshold: 0.3
+
+  weights:
+    yolov10_tracker.pt:
+      classes:
+        - helmet
+        - cyclist
+        - headwear
+
+yolov11:
+  version: m
+  normalize_type: yolo
+  load_model_type: yolo
+  task_type: tracking
+
+  input_width: 1920
+  input_height: 1080
+
+  bpp: 8
+  box_threshold: 0.3
+
+  weights:
+    yolov11_tracker.pt:
+      classes:
+        - helmet
+        - cyclist
+        - headwear
+
+trackers:
+  - DeepOcSort
+
+templates:
+  bikehelmets:
+    model: yolov10
+    weights: yolov10_tracker.pt
+    tracker: DeepOcSort

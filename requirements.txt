@@ -1,0 +1,17 @@
+albumentations
+anomalib
+fastapi
+ffmpy
+boxmot
+pytest
+gradio
+matplotlib
+pillow
+pybase64
+pydantic
+PyYAML
+supervision
+tqdm
+ultralytics
+uvicorn
+yolov5
