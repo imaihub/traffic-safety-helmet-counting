@@ -1,9 +1,7 @@
 import datetime
 import logging
 import os
-from collections import defaultdict
 from logging.handlers import RotatingFileHandler
-from typing import Any
 
 import cv2
 import numpy as np
@@ -19,32 +17,13 @@ def get_color_map(classes: list, color_map_style=cv2.COLORMAP_JET) -> list:
     return color_map
 
 
-def merge_dictionaries(dicts: list[dict[Any, list[Any]]]) -> dict[Any, list[Any]]:
-    """
-    Merges a list of dictionaries where the values are lists of custom objects.
-    When the same key appears in multiple dictionaries, the lists for that key are concatenated.
-
-    Parameters:
-    - dicts (list[dict[Any, list[Any]]]): A list of dictionaries to merge.
-
-    Returns:
-    - dict[Any, list[Any]]: A dictionary with merged lists of custom objects for each key.
-    """
-    merged = defaultdict(list)
-
-    for d in dicts:
-        for key, value in d.items():
-            merged[key].extend(value)
-
-    return dict(merged)
-
 def get_optimal_font_scale(text, width) -> float:
     for scale in reversed(range(0, 60, 1)):
-        text_size = cv2.getTextSize(text, fontFace=cv2.FONT_HERSHEY_DUPLEX, fontScale=scale/10, thickness=1)
+        text_size = cv2.getTextSize(text, fontFace=cv2.FONT_HERSHEY_DUPLEX, fontScale=scale / 10, thickness=1)
         new_width = text_size[0][0]
         if new_width <= width:
             print(new_width)
-            return scale/10
+            return scale / 10
     return 1
 
 

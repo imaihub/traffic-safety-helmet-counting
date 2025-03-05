@@ -7,6 +7,7 @@ class Predictor:
     """
     A Predictor instance is responsible for performing inference on a given image with the model set in the constructor. Depending on the model, it can give extra parameters for example.
     """
+
     def __init__(self, model: torch.nn.Module, box_threshold: float):
         self.model = model
         self.box_threshold = box_threshold

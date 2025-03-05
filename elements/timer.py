@@ -1,8 +1,10 @@
-import time
-import torch
-from typing import Optional
-from elements.utils import Logger
 import multiprocessing
+import time
+from typing import Optional
+
+import torch
+
+from elements.utils import Logger
 
 
 class Timer:
@@ -14,15 +16,15 @@ class Timer:
             self,
             name: str,
             include_gpu: Optional[bool] = False,
-            wait_time: Optional[int] = None,
-            print_timings: Optional[bool] = False,
+            wait_time: Optional[int] = None,  # In milliseconds
+            print_time: Optional[bool] = False,
     ):
         self.logger = Logger.setup_logger()
 
         self.name = name
         self.wait_time = wait_time
         self.include_gpu = include_gpu
-        self.print_timings = print_timings
+        self.print_time_bool = print_time
         self.start_real = None
         self.start_cpu = None
         self.end_real = None
@@ -42,8 +44,11 @@ class Timer:
 
         self.stop()
 
-        if self.print_timings:
-            self.print_times()
+        if self.print_time_bool:
+            self.print_time()
+
+        if self.wait_time:
+            self.wait_until()
 
     def start(self) -> None:
         """
@@ -74,32 +79,34 @@ class Timer:
             self.stop()
         return self.end_real - self.start_real
 
-    def print_times(self) -> None:
+    def print_time(self) -> None:
         """
         Prints the time of the code
         """
         real_time = self.elapsed_real_time()
         cpu_time = self.end_cpu - self.start_cpu
         self.logger.info(f"Real time for {self.name}: {real_time:.4f} seconds")
-        # self.logger.info(f"CPU time for {self.name}: {cpu_time:.4f} seconds")
+        self.logger.info(f"CPU time for {self.name}: {cpu_time:.4f} seconds")
 
     def reset(self) -> None:
         """
         Resets the timer
         """
-        self.start()
+        self.start_real = None
+        self.start_cpu = None
 
     def wait_until(self) -> None:
         """
         Wait until a certain amount of milliseconds is passed from the moment the timer started
         """
-        if self.wait_time is None:
-            self.logger.info("Wait time never set, thus can not wait forever")
+        if not self.wait_time:
+            self.logger.warning("Wait time never set, thus cannot wait until a specific time")
 
         current_difference = time.perf_counter() - self.start_real
 
         if current_difference < self.wait_time:
-            time.sleep(self.wait_time - current_difference)
+            print(f"Waiting for an additional {(self.wait_time - current_difference) / 1000} milliseconds")
+            time.sleep((self.wait_time - current_difference) / 1000)
 
     def get_timings(self) -> dict:
         """

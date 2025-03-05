@@ -3,6 +3,7 @@ from typing import Tuple, Any
 import torch
 from torch import Tensor
 
+
 def decode_yolo_boxes_pt(model, preds: Tuple[Any, ...], image_batch: torch.Tensor, margin: int = 0) -> list[Tensor]:
     """
     Decode the output of YoloV8 to create boxes
@@ -14,7 +15,7 @@ def decode_yolo_boxes_pt(model, preds: Tuple[Any, ...], image_batch: torch.Tenso
     :return: decoded boxes containing [[y1, x1, y2, y2, class_id, class_prob]]
     """
     bboxes_batch = model.detections(preds)
-    if margin > 0:   # Check if centroid is outside border margin
+    if margin > 0:  # Check if centroid is outside border margin
         h, w = image_batch.shape[-2:]
         res = []
         for bboxes in bboxes_batch:

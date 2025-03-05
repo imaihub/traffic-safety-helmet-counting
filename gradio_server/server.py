@@ -6,12 +6,12 @@ import gradio as gr
 
 import src.js
 from elements.enums import Tasks, InputMode
+from elements.settings.model_settings import ModelSettings
+from elements.settings.general_settings import GeneralSettings
+from elements.settings.settings_orchestrator import SettingsOrchestrator
+from elements.settings.tracking_settings import TrackingSettings
 from gradio_server.css_injection import css_injection
 from gradio_server.model_manager import ModelManager
-from gradio_server.settings.general_settings import GeneralSettings
-from gradio_server.settings.model_settings import ModelSettings
-from gradio_server.settings.settings_orchestrator import SettingsOrchestrator
-from gradio_server.settings.tracking_settings import TrackingSettings
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
@@ -33,7 +33,7 @@ config = model_manager.get_parsed_config()
 setting_orchestrator = SettingsOrchestrator(model_manager=model_manager)
 setting_orchestrator.initialize_values(config=config.current_config)
 
-setting_orchestrator.camera_mode_setting.update(InputMode.FILE) # On default, the GUI is suitable for video input mode
+setting_orchestrator.camera_mode_setting.update(InputMode.FILE)  # On default, the GUI is suitable for video input mode
 
 model_manager.start_websocket_server()
 
@@ -61,8 +61,8 @@ if Tasks.TRACKING.name.casefold() in args.type.casefold():
                     box_threshold_box = gr.Text(label="Box threshold", interactive=True, value=str(general_settings.box_threshold), visible=True)
                     box_threshold_box.change(setting_orchestrator.box_threshold_setting.update, inputs=box_threshold_box)
 
-                    dynamic_processing_box = gr.Checkbox(label="Dynamic Processing", interactive=True, value=general_settings.dynamic_processing, visible=False)
-                    dynamic_processing_box.change(setting_orchestrator.dynamic_processing_setting.update, inputs=dynamic_processing_box)
+                    realistic_processing_box = gr.Checkbox(label="Realistic Processing", interactive=True, value=general_settings.realistic_processing, visible=True)
+                    realistic_processing_box.change(setting_orchestrator.realistic_processing_setting.update, inputs=realistic_processing_box)
 
                     gamma_correction_bool_box = gr.Checkbox(label="Gamma correction", interactive=True, value=general_settings.gamma_correction_bool, visible=False)
                     gamma_value_box = gr.Text(label="Gamma value", interactive=True, value=str(general_settings.gamma_value), visible=False)
@@ -86,17 +86,18 @@ if Tasks.TRACKING.name.casefold() in args.type.casefold():
             with gr.Column():
                 input_image_box = gr.File(label="Input video", elem_id="video_in")
 
-                analysis_button = gr.Button(interactive=True, value="Start camera analysis", visible=False) # Can start and stop camera feed analysis, but also cancel video analysis
+                analysis_button = gr.Button(interactive=True, value="Start camera analysis", visible=False)  # Can start and stop camera feed analysis, but also cancel video analysis
                 reset_tracker_stats_button = gr.Button(interactive=True, value="Reset tracker stats", visible=False)
                 image_out_box = gr.Video(interactive=False, elem_id="video_out", height="auto", width=1500)
 
                 input_image_box.upload(fn=model_manager.predict_gui, inputs=[input_image_box], outputs=[analysis_button, reset_tracker_stats_button])
 
         analysis_button.click(model_manager.toggle_analysis, outputs=[analysis_button, reset_tracker_stats_button])
-        camera_button.click(model_manager.switch_camera_mode, outputs=[camera_button, input_image_box, analysis_button, reset_tracker_stats_button, dynamic_processing_box])
+        camera_button.click(model_manager.switch_camera_mode, outputs=[camera_button, input_image_box, analysis_button, reset_tracker_stats_button])
         reset_tracker_stats_button.click(model_manager.reset_tracker)
 
-        advanced_view.change(setting_orchestrator.advanced_view_setting.update, inputs=advanced_view, outputs=[bit_box, width_input_box, height_input_box, box_threshold_box, gamma_correction_bool_box, gamma_value_box, tracker_option_1, tracker_option_2, tracker_option_3, tracker_option_4, dynamic_processing_box])
+        advanced_view.change(setting_orchestrator.advanced_view_setting.update, inputs=advanced_view,
+                             outputs=[bit_box, width_input_box, height_input_box, box_threshold_box, gamma_correction_bool_box, gamma_value_box, tracker_option_1, tracker_option_2, tracker_option_3, tracker_option_4, realistic_processing_box])
 
         device_box.change(setting_orchestrator.device_setting.update, inputs=device_box)
         bit_box.change(setting_orchestrator.bpp_setting.update, inputs=bit_box)
@@ -116,6 +117,5 @@ if Tasks.TRACKING.name.casefold() in args.type.casefold():
                        outputs=check_boxes)
 
         demo.load(fn=None, js=src.js.script_new)
-
 
 demo.launch()

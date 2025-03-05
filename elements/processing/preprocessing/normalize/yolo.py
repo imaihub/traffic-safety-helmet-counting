@@ -1,6 +1,5 @@
 import torch
 
-from elements.enums import NormalizeType
 from elements.processing.base import Processing
 
 
@@ -12,12 +11,12 @@ class NormalizeYolo(Processing):
     def __init__(self):
         super().__init__()
 
-    def apply(self, img: torch.Tensor):
+    def apply(self, image: torch.Tensor):
         """
         Apply the normalization on the passed image
         """
-        img /= 255
-        return img
+        image /= 255
+        return image
 
 
 class DenormalizeYolo(Processing):
@@ -29,9 +28,9 @@ class DenormalizeYolo(Processing):
     def __init__(self):
         super().__init__()
 
-    def apply(self, img: torch.Tensor):
+    def apply(self, image: torch.Tensor):
         """
         Apply the denormalization on the passed image
         """
-        img = img * 255
-        return img
+        image = image * 255
+        return image

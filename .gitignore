@@ -10,13 +10,9 @@ __pycache__/
 *.log
 *.ckpt
 *.pyc
-*.jpg
-*.JPG
-*.PNG
-*.png
 *.xml
 *.ini
-
+*.pt
 fix_capitalization_docs.py
 generate_requirements.py
-osnet
+osnet*

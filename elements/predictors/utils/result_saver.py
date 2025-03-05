@@ -14,6 +14,7 @@ class ResultSaver:
 
     By using it as a context manager, you are sure that the VideoWriter instance gets released and that a copy of the resulting video gets saved
     """
+
     def __init__(self, output_folder: str):
         self.logger = Logger.setup_logger()
         self.local_output_folder = "output"

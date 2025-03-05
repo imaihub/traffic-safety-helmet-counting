@@ -1,16 +1,16 @@
 from enum import Enum
 
 
-class OutputType(Enum):
-    IMAGE_DATA = 1
-    JSON = 2
-
 class Tasks(Enum):
-    OBJECT_DETECTION=0
-    CLASSIFICATION=1
-    SEMANTIC_SEGMENTATION=2
-    INSTANCE_SEGMENTATION=3
-    TRACKING=4
+    """
+    Different tasks in computer vision
+    """
+    OBJECT_DETECTION = 0
+    CLASSIFICATION = 1
+    SEMANTIC_SEGMENTATION = 2
+    INSTANCE_SEGMENTATION = 3
+    TRACKING = 4
+
 
 class NormalizeType(Enum):
     """
@@ -21,12 +21,14 @@ class NormalizeType(Enum):
     YOLO = 2
     CUSTOM = 3
 
+
 class InputMode(Enum):
     """
     Different modes of tracking, either video file input or camera feed input
     """
     CAMERA = 0
     FILE = 1
+
 
 class ApplicationMode(Enum):
     """

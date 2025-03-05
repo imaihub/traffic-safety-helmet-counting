@@ -13,6 +13,7 @@ class LoadModelYolo(LoadModel):
     """
     This class is responsible for loading in yolov8 models.
     """
+
     def __init__(self, model_name: str, weights_file: str, num_classes: int = 1, device: str = "cuda", version: str = "n"):
         super().__init__(weights_file=weights_file, num_classes=num_classes, device=device)
         self.model_name = model_name

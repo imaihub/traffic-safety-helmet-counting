@@ -8,14 +8,14 @@ import torch
 from config_parser import ConfigParser
 from elements.display import Display
 from elements.enums import Tasks, InputMode
+from elements.locker import Locker
+from elements.settings.model_settings import ModelSettings
+from elements.predictors.tracking_predictor import PredictTracking
+from elements.settings.general_settings import GeneralSettings
+from elements.settings.tracking_settings import TrackingSettings
 from elements.utils import Logger
-from gradio_server.locker import Locker
-from gradio_server.predict.tracking import PredictTracking
-from gradio_server.predict.utils import check_model_settings
-from gradio_server.settings.general_settings import GeneralSettings
-from gradio_server.settings.model_settings import ModelSettings
-from gradio_server.settings.tracking_settings import TrackingSettings
-from gradio_server.websocket_manager.websocket_manager_upload import WebSocketServerUpload
+from gradio_server.utils import check_model_settings
+from gradio_server.websocket_manager.websocket_manager import WebSocketServer
 
 logger = Logger().setup_logger()
 
@@ -67,7 +67,7 @@ class ModelManager:
         If the task type is tracking, start the websocket server
         """
         if self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold():
-            self.websocket_server = WebSocketServerUpload()
+            self.websocket_server = WebSocketServer()
             self.websocket_server.run_websocket_server()
 
     def toggle_analysis(self):
@@ -103,16 +103,14 @@ class ModelManager:
             return [gr.Button(value="Set to file mode", interactive=True),
                     gr.File(label="Input video", elem_id="video_in", visible=False),
                     gr.Button(value="Start camera analysis", visible=True),
-                    gr.Button(interactive=True, value="Reset tracker stats", visible=False),
-                    gr.Checkbox(label="Dynamic Processing", interactive=True, value=self.general_settings.dynamic_processing, visible=False)]
+                    gr.Button(interactive=True, value="Reset tracker stats", visible=False)]
 
         else:
             self.general_settings.camera_mode = InputMode.FILE
             return [gr.Button(value="Set to camera input mode", interactive=True),
                     gr.File(label="Input video", elem_id="video_in", visible=True),
                     gr.Button(value="Cancel processing", visible=False),
-                    gr.Button(interactive=True, value="Reset tracker stats", visible=False),
-                    gr.Checkbox(label="Dynamic Processing", interactive=True, value=self.general_settings.dynamic_processing)]
+                    gr.Button(interactive=True, value="Reset tracker stats", visible=False)]
 
     def reset_tracker(self):
         """
@@ -129,8 +127,8 @@ class ModelManager:
         """
         self.analysis_thread = threading.Thread(target=self.predict, args=(input_path,))
         self.analysis_thread.start()
-        return [gr.Button(interactive=True, value="Cancel processing"),
-                gr.Button(interactive=True, value="Reset tracker stats")]
+        return [gr.Button(interactive=True, value="Cancel processing", visible=True),
+                gr.Button(interactive=True, value="Reset tracker stats", visible=True)]
 
     @torch.no_grad()
     def predict(self, input_path: Optional[Union[str, List]], display: Optional[Display] = None, skip_frames: Optional[int] = 0):
@@ -145,7 +143,7 @@ class ModelManager:
             return None
 
         if (self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold() and
-                self.predictor is not None and not type(self.predictor.model.model) == type(self.model_settings.model.model)):  # Live update of the model
+                self.predictor is not None and not type(self.predictor.model.model) is type(self.model_settings.model.model)):  # Live update of the model
             self.predictor.update_model(self.model_settings.model)
 
         if self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold():

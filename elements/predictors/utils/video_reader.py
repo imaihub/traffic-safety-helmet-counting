@@ -5,6 +5,7 @@ class VideoReader:
     """
     A VideoReader instance is responsible for taking in a video path and returning it frame for frame in a generator method.
     """
+
     def __init__(self, input_path: str):
         self.initialize(input_path=input_path)
 

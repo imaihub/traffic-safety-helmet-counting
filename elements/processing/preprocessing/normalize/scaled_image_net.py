@@ -16,14 +16,14 @@ class NormalizeScaledImageNet(Processing):
         self.mean = torch.tensor([0.485 * self.bit_range, 0.456 * self.bit_range, 0.406 * self.bit_range], dtype=torch.float32).view((3, 1, 1))
         self.std = torch.tensor([0.229 * self.bit_range, 0.224 * self.bit_range, 0.225 * self.bit_range], dtype=torch.float32).view((3, 1, 1))
 
-    def apply(self, img: torch.Tensor):
+    def apply(self, image: torch.Tensor):
         """
         Apply the normalization on the passed image
         """
-        img -= self.mean.to(img.device)
-        img /= self.std.to(img.device)
+        image -= self.mean.to(image.device)
+        image /= self.std.to(image.device)
 
-        return img
+        return image
 
 
 class DenormalizeScaledImageNet(Processing):
@@ -39,13 +39,13 @@ class DenormalizeScaledImageNet(Processing):
         self.mean = torch.tensor([0.485 * self.bit_range, 0.456 * self.bit_range, 0.406 * self.bit_range], dtype=torch.float32).view(3, 1, 1)
         self.std = torch.tensor([0.229 * self.bit_range, 0.224 * self.bit_range, 0.225 * self.bit_range], dtype=torch.float32).view(3, 1, 1)
 
-    def apply(self, img: torch.Tensor):
+    def apply(self, image: torch.Tensor):
         """
         Apply the denormalization on the passed image
         """
-        img = (img * self.std.to(img.device)) + self.mean.to(img.device)
+        image = (image * self.std.to(image.device)) + self.mean.to(image.device)
 
         # Ensure the image values are within the original range
-        img.clamp_(0, self.bit_range).to(torch.uint8)
+        image.clamp_(0, self.bit_range).to(torch.uint8)
 
-        return img
+        return image

@@ -1,9 +1,11 @@
+from typing import Optional
+
 import cv2
 import numpy as np
 
 from elements.datatypes.boundingbox import BoundingBox
 from elements.processing.base import Processing
-from elements.utils import get_color_map
+from elements.utils import get_color_map, Logger
 
 
 class CombineBoxes(Processing):
@@ -11,8 +13,8 @@ class CombineBoxes(Processing):
     Merges bounding boxes into an image
     """
 
-    def __init__(self, classes: list[str], bpp: int = 8, ratios=None, color_map=None):
-        super().__init__()
+    def __init__(self, classes: list[str], color_map: Optional[list], ratios: Optional[tuple] = None, bpp: int = 8):
+        self.logger = Logger.setup_logger()
         self.bpp: int = bpp
         self.boxes: list[BoundingBox] = []
         self.classes: list = classes
@@ -25,7 +27,7 @@ class CombineBoxes(Processing):
         """
         self.boxes = boxes
 
-    def apply(self, img: np.ndarray):
+    def apply(self, image: np.ndarray):
         """
         Visualizes the boxes set in set_boxes with the confidence, class name and track id
         """
@@ -36,7 +38,7 @@ class CombineBoxes(Processing):
 
         if len(self.boxes) == 0:
             self.logger.warn(f"No boxes found")
-            return img
+            return image
 
         # Display the boxes given the first threshold value
         for i, box in enumerate(self.boxes):
@@ -48,13 +50,11 @@ class CombineBoxes(Processing):
 
             text_position = (x1 + 10, y1 + 60)
 
-            current_img = np.ascontiguousarray(img)
+            image = np.ascontiguousarray(image)
             color = tuple([int(v) for v in tuple(self.color_map[int(box.class_id)][0])])
 
             # Draw rectangle
-            current_img = cv2.rectangle(current_img, (x1, y1), (x2, y2), color, 4)
-            cv2.putText(img=current_img, text=f"{str(round(box.confidence, 2))} {self.classes[int(box.class_id)]} id: {int(box.track_id)}", org=text_position, fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2, color=color, thickness=2)
+            image = cv2.rectangle(image, (x1, y1), (x2, y2), color, 4)
+            cv2.putText(img=image, text=f"{str(round(box.confidence, 2))} {self.classes[int(box.class_id)]} id: {int(box.track_id)}", org=text_position, fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2, color=color, thickness=2)
 
-            img = current_img
-
-        return img
+        return image

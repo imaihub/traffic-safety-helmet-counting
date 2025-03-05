@@ -1,17 +1,20 @@
 import numpy as np
 
+from elements.trackers.tracker_processor import TrackerProcessor
+
 
 class BoxProcessor:
     """
     A BoxProcessor instance is responsible for taking in (postprocessed) predictions of a YOLO model and constructing a readable numpy array from it
     """
-    def __init__(self, tracker_processor, tracked_classes: list, classes: list, box_threshold: float):
+
+    def __init__(self, tracker_processor: TrackerProcessor, tracked_classes: list, classes: list, box_threshold: float):
         self.tracker_processor = tracker_processor
         self.tracked_classes = tracked_classes
         self.classes = classes
         self.box_threshold = box_threshold
 
-    def extract_boxes(self, predictions):
+    def extract_boxes(self, predictions: np.ndarray):
         """
         Constructs a numpy array from raw YOLO predictions [x1, y1, x2, y2, confidence, class_id]
         """
