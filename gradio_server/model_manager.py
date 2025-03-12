@@ -5,7 +5,7 @@ from typing import Union, List, Optional
 import gradio as gr
 import torch
 
-from config_parser import ConfigParser
+from config.config_parser import ConfigParser
 from elements.display import Display
 from elements.enums import Tasks, InputMode
 from elements.locker import Locker

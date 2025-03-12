@@ -102,11 +102,15 @@ class Timer:
         if not self.wait_time:
             self.logger.warning("Wait time never set, thus cannot wait until a specific time")
 
+        # Convert wait_time from milliseconds to seconds
+        wait_time_seconds = self.wait_time / 1000
+
         current_difference = time.perf_counter() - self.start_real
 
-        if current_difference < self.wait_time:
-            print(f"Waiting for an additional {(self.wait_time - current_difference) / 1000} milliseconds")
-            time.sleep((self.wait_time - current_difference) / 1000)
+        if current_difference < wait_time_seconds:
+            remaining_time = wait_time_seconds - current_difference
+            self.logger.info(f"Waiting for an additional {remaining_time:.4f} seconds")
+            time.sleep(remaining_time)
 
     def get_timings(self) -> dict:
         """

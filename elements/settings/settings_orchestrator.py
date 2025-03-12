@@ -12,6 +12,7 @@ from elements.settings.params.input_height import InputHeightSetting
 from elements.settings.params.input_width import InputWidthSetting
 from elements.settings.params.normalize_type import NormalizeTypeSetting
 from elements.settings.params.output_folder import OutputFolderSetting
+from elements.settings.params.screen_dimension import ScreenDimensionSetting
 from elements.settings.params.task_type import TaskTypeSetting
 from elements.settings.params.tracked_classes import TrackedClassesSetting
 from elements.settings.params.tracker import TrackerSetting, TrackerOption1Settings, TrackerOption2Settings, TrackerOption3Settings, TrackerOption4Settings
@@ -37,6 +38,7 @@ class SettingsOrchestrator:
 
         self.advanced_view_setting = AdvancedViewSetting(general_settings=model_manager.general_settings, tracking_settings=model_manager.tracking_settings, locker=model_manager.locker)
         self.realistic_processing_setting = RealisticProcessingSetting(general_settings=model_manager.general_settings, predictor_parameters=model_manager.predictor_parameters, locker=model_manager.locker)
+        self.screen_dimension_setting = ScreenDimensionSetting(general_settings=model_manager.general_settings, locker=model_manager.locker)
 
         self.box_threshold_setting = BoxThresholdSetting(general_settings=model_manager.general_settings, predictor_parameters=model_manager.predictor_parameters, locker=model_manager.locker)
 
@@ -58,7 +60,7 @@ class SettingsOrchestrator:
 
         self.normalize_type_setting.update(normalize_type=config.normalize_type)
         self.classes_setting.update(classes=config.classes)
-        self.tracked_classes_setting.update(classes=config.classes)
+        self.tracked_classes_setting.update(classes=config.tracked_classes)
         self.bpp_setting.update(bpp=config.bpp)
         self.input_height_setting.update(input_height=config.input_height)
         self.input_width_setting.update(input_width=config.input_width)

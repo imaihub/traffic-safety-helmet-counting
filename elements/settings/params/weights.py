@@ -36,7 +36,7 @@ class WeightsSetting(ParamSetting):
             if weights_path is not self.model_settings.weights_path and weights_path:
                 if self.config_parser.current_config.load_model_type in ["yolo"]:
                     self.general_settings.classes = self.config_parser.current_config.classes
-                    self.model_settings.model = LoadModelYolo(weights_file=weights_path, model_name=self.model_settings.architecture, version=self.config_parser.current_config.version).load_model()
+                    self.model_settings.model = LoadModelYolo(weights_file=weights_path, model_name=self.model_settings.architecture, version=self.config_parser.current_config.version, device=self.model_settings.device).load_model()
             self.model_settings.weights_path = weights_path
             self.general_settings.tracked_classes = []
             self.predictor_parameters = None

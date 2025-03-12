@@ -55,3 +55,4 @@ class BoundingBox:
         """Set bounding box using min/max coordinates."""
         self.x1, self.y1, self.x2, self.y2 = float(xmin), float(ymin), float(xmax), float(ymax)
         self._relative = relative
+

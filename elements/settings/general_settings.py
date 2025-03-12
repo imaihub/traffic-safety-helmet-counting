@@ -25,6 +25,8 @@ class GeneralSettings:
         self.gamma_value: float = 2.2
         self.input_width: int = 0
         self.input_height: int = 0
+        self.screen_width: int = 1920
+        self.screen_height: int = 1080
         self.normalize_type: Optional[NormalizeType] = None
         self.advanced_view: bool = False
         self.realistic_processing: bool = True

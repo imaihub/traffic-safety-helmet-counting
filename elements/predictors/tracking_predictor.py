@@ -39,11 +39,10 @@ class PredictTracking(PredictorFactory):
         if self.tracking_settings.tracker.casefold() == "deepocsort":
             tracker_generator = partial(boxmot.DeepOcSort,
                                         asso_func="centroid",
-                                        max_age=1000,
                                         device=self.model_settings.device,
-                                        det_thresh=float(self.tracking_settings.param_options["DETECTION_THRESHOLD"]),
+                                        # det_thresh=float(self.tracking_settings.param_options["DETECTION_THRESHOLD"]),
                                         half=True,
-                                        min_hits=int(self.tracking_settings.param_options["MINIMUM_HITS"]),
+                                        # min_hits=int(self.tracking_settings.param_options["MINIMUM_HITS"]),
                                         reid_weights=Path("osnet_x1_0_msmt17.pt"),
                                         per_class=True, )
         else:
@@ -65,12 +64,14 @@ class PredictTracking(PredictorFactory):
             predictor = PredictorTrackerCamera(model=self.model_settings.model,
                                                general_settings=self.general_settings,
                                                model_settings=self.model_settings,
+                                               tracking_settings=self.tracking_settings,
                                                predictor_parameters=predictor_parameters,
                                                websocket_server=self.websocket_server)
         else:
             predictor = PredictorTrackerInput(model=self.model_settings.model,
                                               general_settings=self.general_settings,
                                               model_settings=self.model_settings,
+                                              tracking_settings=self.tracking_settings,
                                               predictor_parameters=predictor_parameters,
                                               websocket_server=self.websocket_server)
         return predictor, predictor_parameters

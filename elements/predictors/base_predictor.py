@@ -1,5 +1,6 @@
 import time
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from typing import Optional
 
 import cv2
@@ -9,6 +10,7 @@ import torch
 
 from elements.display import Display
 from elements.enums import ApplicationMode
+from elements.processing.preprocessing.resize import Resize
 from elements.settings.model_settings import ModelSettings
 from elements.predictors.parameters import PredictorParameters
 from elements.predictors.utils.box_processor import BoxProcessor
@@ -16,6 +18,7 @@ from elements.predictors.utils.predictor import Predictor
 from elements.predictors.utils.result_saver import ResultSaver
 from elements.processing.postprocessing.object_detection.combine_boxes import CombineBoxes
 from elements.settings.general_settings import GeneralSettings
+from elements.settings.tracking_settings import TrackingSettings
 from elements.utils import Logger, get_color_map
 
 
@@ -28,6 +31,7 @@ class PredictorBase(ABC):
                  model: torch.nn.Module,
                  general_settings: GeneralSettings,
                  model_settings: ModelSettings,
+                 tracking_settings: TrackingSettings,
                  predictor_parameters: PredictorParameters,
                  websocket_server):
         self.logger = Logger.setup_logger()
@@ -35,6 +39,7 @@ class PredictorBase(ABC):
 
         self.general_settings = general_settings
         self.model_settings = model_settings
+        self.tracking_settings = tracking_settings
         self.model = model
 
         self.color_map = get_color_map(self.general_settings.classes)
@@ -42,20 +47,34 @@ class PredictorBase(ABC):
         self.aborting = None
         self.predictor_parameters = predictor_parameters
 
+        self.predictor, self.box_processor, self.result_saver, self.combine_boxes, self.resize_for_prediction, self.resize_for_visualization = self.initialize_helpers()
+
         self.initialize_helpers()
 
     def initialize_helpers(self):
         """
         Instantiate building blocks for the prediction process and postprocessing like Predictor, BoxProcessor, ResultSaver and CombineBoxes
         """
-        self.predictor = Predictor(self.model, self.general_settings.box_threshold)
-        self.box_processor = BoxProcessor(tracker_processor=self.predictor_parameters.tracker_processor,
+        predictor = Predictor(model=self.model, box_threshold=self.general_settings.box_threshold, device=self.model_settings.device)
+        box_processor = BoxProcessor(tracker_processor=self.predictor_parameters.tracker_processor,
                                           tracked_classes=self.general_settings.tracked_classes,
                                           classes=self.general_settings.classes,
                                           box_threshold=self.general_settings.box_threshold)
 
-        self.result_saver = ResultSaver(output_folder=self.general_settings.output_folder)
-        self.combine_boxes = CombineBoxes(classes=self.general_settings.classes, color_map=self.color_map)
+        result_saver = ResultSaver(output_folder=self.general_settings.output_folder)
+        combine_boxes = CombineBoxes(classes=self.general_settings.classes, color_map=self.color_map)
+        resize_for_prediction = Resize(height_to=self.general_settings.input_height, width_to=self.general_settings.input_width)
+        resize_for_visualization = Resize(height_to=self.general_settings.screen_height, width_to=self.general_settings.screen_width,
+                                          height_from=self.general_settings.input_height, width_from=self.general_settings.input_width)
+
+        return predictor, box_processor, result_saver, combine_boxes, resize_for_prediction, resize_for_visualization
+
+    def reset_tracker(self):
+        """
+        Resets the tracker
+        """
+        self.predictor_parameters.tracker_processor.reset()
+        self.tracking_settings.reset = True
 
     def update_model(self, model: torch.nn.Module):
         """
@@ -86,7 +105,8 @@ class PredictorBase(ABC):
         """
         Set the base64 representation of the image as a response in the websocket instance
         """
-        _, buffer = cv2.imencode('.jpg', image, params=[int(cv2.IMWRITE_JPEG_QUALITY), 85])  # Convert the frame to JPG format
+        _, buffer = cv2.imencode('.jpg', image,
+                                 params=[int(cv2.IMWRITE_JPEG_QUALITY), 85])  # Convert the frame to JPG format
 
         frame_base64 = pybase64.b64encode(buffer).decode('utf-8')  # Encode to base64
 
@@ -101,23 +121,35 @@ class PredictorBase(ABC):
         3. Visualizes the boxes on top of the original image
         4. Display the resulting image if a Display instance is passed
         """
+        visualization_image = deepcopy(image)
+
+        image = self.resize_for_prediction.resize_image(image=image)
+
         predictions = self.predictor.predict(image=image)
         boxes_numpy = self.box_processor.extract_boxes(predictions=predictions)
 
-        active_boxes = self.box_processor.tracker_processor.update_boxes(boxes=boxes_numpy, image=image)
+        try:
+            active_boxes = self.box_processor.tracker_processor.update_boxes(boxes=boxes_numpy, image=image)
+        except Exception as e:
+            self.logger.error(e)
+            active_boxes = []
+
         boxes_from_active_tracks = self.box_processor.tracker_processor.get_boxes_from_active_tracks(active_tracks=active_boxes)
-        save_image = self.box_processor.tracker_processor.update_tracks(active_tracks=boxes_from_active_tracks, verbose=False)
+        save_image = self.box_processor.tracker_processor.update_tracks(active_tracks=boxes_from_active_tracks,verbose=False)
+
+        visualization_image = cv2.resize(visualization_image, (self.general_settings.screen_width, self.general_settings.screen_height))
+        boxes_from_active_tracks = self.resize_for_visualization.resize_boxes(boxes=boxes_from_active_tracks)
 
         if boxes_from_active_tracks:
             self.combine_boxes.set_boxes(boxes=boxes_from_active_tracks)
-            image = self.combine_boxes.apply(image=image)
+            visualization_image = self.combine_boxes.apply(image=visualization_image)
 
-        image = self.box_processor.tracker_processor.update_count(image=image)
+        visualization_image = self.box_processor.tracker_processor.update_count(image=visualization_image)
 
         if display is not None:
-            display.show_image(cv2.cvtColor(cv2.resize(src=image, dsize=(1920, 1080)), cv2.COLOR_BGR2RGB))
+            display.show_image(cv2.cvtColor(visualization_image, cv2.COLOR_BGR2RGB))
 
-        return image, save_image
+        return visualization_image, save_image
 
     @torch.no_grad()
     @abstractmethod

@@ -16,6 +16,9 @@ yolov10:
         - helmet
         - cyclist
         - headwear
+      tracked_classes:
+        - helmet
+        - cyclist
 
 yolov11:
   version: m
@@ -23,8 +26,8 @@ yolov11:
   load_model_type: yolo
   task_type: tracking
 
-  input_width: 1920
-  input_height: 1080
+  input_width: 1280
+  input_height: 736
 
   bpp: 8
   box_threshold: 0.3
@@ -35,7 +38,9 @@ yolov11:
         - helmet
         - cyclist
         - headwear
-
+      tracked_classes:
+        - helmet
+        - cyclist
 trackers:
   - DeepOcSort
 

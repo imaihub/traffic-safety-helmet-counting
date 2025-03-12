@@ -16,5 +16,6 @@ class DeviceSetting(ParamSetting):
         with self.locker.lock:
             self.logger.info(f"Changed device from {str(self.model_settings.device)} to {str(device)}")
             if device is not self.model_settings.device:
-                self.model_settings.model.to(device)
+                if self.model_settings.model is not None:
+                    self.model_settings.model.to(device)
                 self.model_settings.device = device

@@ -6,6 +6,7 @@ from elements.predictors.base_predictor import PredictorBase
 from elements.predictors.parameters import PredictorParameters
 from elements.predictors.utils.video_capture import VideoCapture
 from elements.settings.general_settings import GeneralSettings
+from elements.settings.tracking_settings import TrackingSettings
 
 
 class PredictorTrackerCamera(PredictorBase):
@@ -16,10 +17,16 @@ class PredictorTrackerCamera(PredictorBase):
     def __init__(self, model: torch.nn.Module,
                  general_settings: GeneralSettings,
                  model_settings: ModelSettings,
+                 tracking_settings: TrackingSettings,
                  predictor_parameters: PredictorParameters,
                  websocket_server):
-        super().__init__(model, general_settings, model_settings, predictor_parameters, websocket_server)
-        self.result_saver.initiate_result_video(width=1920, height=1080, fps=30)  # The FPS is as guess as this information is not available until later
+        super().__init__(model=model,
+                         general_settings=general_settings,
+                         model_settings=model_settings,
+                         tracking_settings=tracking_settings,
+                         predictor_parameters=predictor_parameters,
+                         websocket_server=websocket_server)
+        self.result_saver.initiate_result_video(width=self.general_settings.screen_width, height=self.general_settings.screen_height, fps=30)  # The FPS is as guess as this information is not available until later
 
     @torch.no_grad()
     def predict(self):
@@ -48,3 +55,4 @@ class PredictorTrackerCamera(PredictorBase):
 
         except Exception as e:
             self.logger.error(e)
+            return None

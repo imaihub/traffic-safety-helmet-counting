@@ -90,6 +90,7 @@ class ConfigParser:
         self._add_to_list_in_dict(self.task_type_models, model_config.task_type, model_config)
 
         model_config.classes = model_config_data.get("weights").get(weights).get("classes", [])
+        model_config.tracked_classes = model_config_data.get("weights").get(weights).get("tracked_classes", [])
         model_config.load_model_type = model_config_data.get("load_model_type")
         model_config.box_threshold = model_config_data.get("box_threshold")
 

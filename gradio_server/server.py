@@ -18,6 +18,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 parser = ArgumentParser(description='')
 parser.add_argument('--type', type=str, default='tracking')
 parser.add_argument('--template', type=str, default="bikehelmets")
+parser.add_argument('--screen-width', type=int, default=1920)
+parser.add_argument('--screen-height', type=int, default=1080)
 
 args = parser.parse_args()
 
@@ -34,6 +36,7 @@ setting_orchestrator = SettingsOrchestrator(model_manager=model_manager)
 setting_orchestrator.initialize_values(config=config.current_config)
 
 setting_orchestrator.camera_mode_setting.update(InputMode.FILE)  # On default, the GUI is suitable for video input mode
+setting_orchestrator.screen_dimension_setting.update(width=args.screen_width, height=args.screen_height)
 
 model_manager.start_websocket_server()
 
@@ -47,7 +50,7 @@ if Tasks.TRACKING.name.casefold() in args.type.casefold():
                 with gr.Column():
                     camera_button = gr.Button(value="Set to camera mode", interactive=True)
                     advanced_view = gr.Checkbox(label="Advanced mode", interactive=True, value=model_manager.general_settings.advanced_view)
-                    output_folder = gr.Text(label="Output folder for the tracking results", value=model_manager.general_settings.output_folder)
+                    output_folder = gr.Text(label="Output folder for the tracking results", value=model_manager.general_settings.output_folder, interactive=False)
                     model_architectures = gr.Dropdown(choices=[config.architecture for config in config.task_type_models[args.type]], label="Model architectures", value=model_manager.model_settings.architecture, interactive=True)
                     weights = gr.Radio(label="Model weights", interactive=True, choices=[a_config.weights for a_config in config.all_configs if a_config.architecture == config.current_config.architecture], value=config.current_config.weights)
                     bit_box = gr.Dropdown(choices=["6", "8", "10", "12", "14", "16"], label="Bit", interactive=True, value=str(model_manager.general_settings.bpp), visible=False)
