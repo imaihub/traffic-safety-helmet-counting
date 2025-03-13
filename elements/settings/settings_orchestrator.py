@@ -3,6 +3,7 @@ from elements.settings.params.advanced_view import AdvancedViewSetting
 from elements.settings.params.architecture import ArchitectureSetting
 from elements.settings.params.box_threshold import BoxThresholdSetting
 from elements.settings.params.bpp import BPPSetting
+from elements.settings.params.camera import CameraDimensionSetting, CameraIndexSetting
 from elements.settings.params.classes import ClassesSetting
 from elements.settings.params.device import DeviceSetting
 from elements.settings.params.camera_mode import CameraModeSetting
@@ -12,6 +13,7 @@ from elements.settings.params.input_height import InputHeightSetting
 from elements.settings.params.input_width import InputWidthSetting
 from elements.settings.params.normalize_type import NormalizeTypeSetting
 from elements.settings.params.output_folder import OutputFolderSetting
+from elements.settings.params.save_frames import SaveAllFrames
 from elements.settings.params.screen_dimension import ScreenDimensionSetting
 from elements.settings.params.task_type import TaskTypeSetting
 from elements.settings.params.tracked_classes import TrackedClassesSetting
@@ -39,6 +41,10 @@ class SettingsOrchestrator:
         self.advanced_view_setting = AdvancedViewSetting(general_settings=model_manager.general_settings, tracking_settings=model_manager.tracking_settings, locker=model_manager.locker)
         self.realistic_processing_setting = RealisticProcessingSetting(general_settings=model_manager.general_settings, predictor_parameters=model_manager.predictor_parameters, locker=model_manager.locker)
         self.screen_dimension_setting = ScreenDimensionSetting(general_settings=model_manager.general_settings, locker=model_manager.locker)
+
+        self.camera_dimension_setting = CameraDimensionSetting(general_settings=model_manager.general_settings, locker=model_manager.locker)
+        self.camera_index_setting = CameraIndexSetting(general_settings=model_manager.general_settings, locker=model_manager.locker)
+        self.save_all_frames_setting = SaveAllFrames(general_settings=model_manager.general_settings, locker=model_manager.locker)
 
         self.box_threshold_setting = BoxThresholdSetting(general_settings=model_manager.general_settings, predictor_parameters=model_manager.predictor_parameters, locker=model_manager.locker)
 

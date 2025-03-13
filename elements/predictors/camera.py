@@ -26,7 +26,9 @@ class PredictorTrackerCamera(PredictorBase):
                          tracking_settings=tracking_settings,
                          predictor_parameters=predictor_parameters,
                          websocket_server=websocket_server)
-        self.result_saver.initiate_result_video(width=self.general_settings.screen_width, height=self.general_settings.screen_height, fps=30)  # The FPS is as guess as this information is not available until later
+        self.result_saver.initiate_result_video(width=self.general_settings.screen_width,
+                                                height=self.general_settings.screen_height,
+                                                fps=30)  # The FPS is as guess as this information is not available until later
 
     @torch.no_grad()
     def predict(self):
@@ -35,12 +37,16 @@ class PredictorTrackerCamera(PredictorBase):
         """
         try:
             with self.result_saver:
-                with VideoCapture() as video_capture:
+                with VideoCapture(camera_height=self.general_settings.camera_height,
+                                  camera_width=self.general_settings.camera_width,
+                                  camera_index=self.general_settings.camera_index,
+                                  save_directory=self.general_settings.output_folder) as video_capture:
                     for image in video_capture.frames():
                         if self.aborting:
                             break
 
-                        show_image, save_image = self.process_frame(image=image, display=self.predictor_parameters.display)
+                        show_image, save_image = self.process_frame(image=image,
+                                                                    display=self.predictor_parameters.display)
 
                         self.result_saver.append_image_to_video(image=show_image)
                         if save_image:

@@ -22,6 +22,10 @@ parser.add_argument('--template', type=str, default="bikehelmets")
 parser.add_argument('--input', type=str, default="output.mp4")
 parser.add_argument('--screen-width', type=int, default=1920)
 parser.add_argument('--screen-height', type=int, default=1080)
+parser.add_argument('--camera-width', type=int, default=1920)
+parser.add_argument('--camera-height', type=int, default=1080)
+parser.add_argument('--camera-index', type=int, default=0)
+parser.add_argument('--save-all-frames', action="store_true")
 
 args = parser.parse_args()
 
@@ -41,6 +45,9 @@ setting_orchestrator = SettingsOrchestrator(model_manager=model_manager)
 setting_orchestrator.device_setting.update(device="cuda:0" if args.gpu else "cpu")
 setting_orchestrator.realistic_processing_setting.update(realistic_processing=args.realistic)
 setting_orchestrator.screen_dimension_setting.update(width=args.screen_width, height=args.screen_height)
+setting_orchestrator.camera_dimension_setting.update(width=args.camera_width, height=args.camera_height)
+setting_orchestrator.camera_index_setting.update(index=args.camera_index)
+setting_orchestrator.save_all_frames_setting.update(save_all_frames=args.save_all_frames)
 
 setting_orchestrator.initialize_values(config=config.current_config)
 
