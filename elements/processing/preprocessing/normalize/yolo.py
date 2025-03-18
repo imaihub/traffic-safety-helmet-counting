@@ -8,10 +8,10 @@ class NormalizeYolo(Processing):
     Normalize an image by scaling the pixel values between 0 and 1
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
-    def apply(self, image: torch.Tensor):
+    def apply(self, image: torch.Tensor) -> torch.Tensor:
         """
         Apply the normalization on the passed image
         """
@@ -25,10 +25,10 @@ class DenormalizeYolo(Processing):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
-    def apply(self, image: torch.Tensor):
+    def apply(self, image: torch.Tensor) -> torch.Tensor:
         """
         Apply the denormalization on the passed image
         """

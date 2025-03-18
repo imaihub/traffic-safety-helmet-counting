@@ -12,7 +12,7 @@ class ClassesSetting(ParamSetting):
         super().__init__(locker)
         self.general_settings = general_settings
 
-    def update(self, classes: list):
+    def update(self, classes: list) -> None:
         with self.locker.lock:
-            self.logger.info(f"Changed classes value from {str(self.general_settings.classes)} to {str(classes)}")
-            self.general_settings.classes = classes
+            self.logger.info(f"Changed tracked classes value from {str(self.general_settings.tracked_classes)} to {str(classes)}")
+            self.general_settings.tracked_classes = classes

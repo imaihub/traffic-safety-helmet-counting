@@ -12,7 +12,7 @@ class ScreenDimensionSetting(ParamSetting):
         super().__init__(locker)
         self.general_settings = general_settings
 
-    def update(self, width: int, height: int):
+    def update(self, width: int, height: int) -> None:
         with self.locker.lock:
             self.logger.info(f"Changed screen dimensions from {str(self.general_settings.screen_width)}x{str(self.general_settings.screen_height)} "
                              f"to {width}x{height}")

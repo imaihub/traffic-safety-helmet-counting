@@ -3,6 +3,8 @@ from abc import abstractmethod, ABC
 
 import torch.nn
 
+from elements.utils import Logger
+
 
 class LoadModel(ABC):
     """
@@ -10,6 +12,7 @@ class LoadModel(ABC):
     """
 
     def __init__(self, weights_file: str, num_classes: int = 1, device: str = "cuda"):
+        self.logger = Logger.setup_logger()
         self.base_path = getattr(sys, '_MEIPASS', "")
         self.weights_file = weights_file
         self.device = device

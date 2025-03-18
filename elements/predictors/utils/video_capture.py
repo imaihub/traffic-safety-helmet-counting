@@ -1,7 +1,9 @@
 import os
 import time
+from typing import Self, Iterator
 
 import cv2
+import numpy as np
 
 
 class VideoCapture:
@@ -20,12 +22,12 @@ class VideoCapture:
         if self.save_all_frames:
             os.makedirs(self.save_folder, exist_ok=True)
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         return self
 
-    def frames(self):
+    def frames(self) -> Iterator[np.ndarray]:
         success, image = self.vidcap.read()
-        i = 0
+        i: int = 0
         while success:
             yield image
             success, image = self.vidcap.read()
@@ -33,8 +35,8 @@ class VideoCapture:
                 cv2.imwrite(os.path.join(self.save_folder, f"frame{str(i)}.png"), image)
                 i += 1
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         self.release()
 
-    def release(self):
+    def release(self) -> None:
         self.vidcap.release()

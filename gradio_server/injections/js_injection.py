@@ -1,4 +1,4 @@
-script_new = """
+js_injection = """
     function connectWebSocket() {
         var ws;
         var imgElement = null;

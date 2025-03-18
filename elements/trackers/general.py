@@ -7,11 +7,11 @@ class GeneralizedProcessor(TrackerProcessor):
         """
         Uses the custom Track objects to keep a list of which instances have been counted already
         """
-        save_image = False
+        save_image: bool = False
         for track in active_tracks:
             if track.track_id not in self.tracks.keys():
                 if verbose:
-                    self.logger.info(f"{self.general_settings.classes[int(track.class_id)]} added", duration=1)
+                    self.logger.info(f"{self.general_settings.classes[int(track.class_id)]} added")
                 self.tracks[track.track_id] = {"passed": True}
                 self.counts[self.general_settings.classes[int(track.class_id)]] += 1
                 save_image = True

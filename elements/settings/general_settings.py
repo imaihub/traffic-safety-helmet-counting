@@ -11,18 +11,17 @@ class GeneralSettings:
     """
     These are the parameters that get used throughout the application. They initially get set using the current config from the config.yaml
     """
-    def __init__(self):
-        super().__init__()
+    def __init__(self) -> None:
         self.task_type: Optional[str] = None
         self.mean: Optional[list] = None
         self.std: Optional[list] = None
         self.camera_mode: InputMode = InputMode.FILE
-        self.application_mode = ApplicationMode.GUI
-        self.tracked_classes = Optional[list]
+        self.application_mode: ApplicationMode = ApplicationMode.GUI
+        self.tracked_classes: list = []
         self.classes: list = []
         self.bpp: int = 8
         self.gamma_correction_bool: bool = False
-        self.gamma_value: float = 2.2
+        self.gamma_correction_value: float = 2.2
         self.input_width: int = 0
         self.input_height: int = 0
         self.screen_width: int = 1920

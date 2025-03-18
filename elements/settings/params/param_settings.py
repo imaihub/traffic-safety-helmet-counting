@@ -1,7 +1,7 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 
-from elements.utils import Logger
 from elements.locker import Locker
+from elements.utils import Logger
 
 
 class ParamSetting(ABC):
@@ -11,11 +11,6 @@ class ParamSetting(ABC):
     def __init__(self, locker: Locker):
         self.locker = locker
         self.logger = Logger.setup_logger()
-
-    @abstractmethod
-    def update(self, **params):
-        pass
-
 
 
 

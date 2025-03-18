@@ -13,7 +13,7 @@ class CameraModeSetting(ParamSetting):
         super().__init__(locker)
         self.general_settings = general_settings
 
-    def update(self, camera_mode: InputMode):
+    def update(self, camera_mode: InputMode) -> None:
         with self.locker.lock:
             self.logger.info(f"Changed camera mode from {str(self.general_settings.camera_mode.name)} to {str(camera_mode.name)}")
             self.general_settings.camera_mode = camera_mode

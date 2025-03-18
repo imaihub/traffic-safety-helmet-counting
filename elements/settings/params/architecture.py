@@ -1,8 +1,12 @@
+import gradio as gr
+import torch
+
+from config.config_parser import ConfigParser
 from elements.enums import Tasks
 from elements.locker import Locker
+from elements.settings.general_settings import GeneralSettings
+from elements.settings.model_settings import ModelSettings
 from elements.settings.params.param_settings import ParamSetting
-
-import gradio as gr
 
 
 class ArchitectureSetting(ParamSetting):
@@ -10,11 +14,10 @@ class ArchitectureSetting(ParamSetting):
     Changes the architecture when a user picks another from the DropDown element. Updates the available weight options when that happens
     """
 
-    def __init__(self, general_settings, predictor_parameters, model_settings, config_parser, locker: Locker):
+    def __init__(self, general_settings: GeneralSettings, model_settings: ModelSettings, config_parser: ConfigParser, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings
         self.model_settings = model_settings
-        self.predictor_parameters = predictor_parameters
         self.config_parser = config_parser
 
     def update(self, architecture: str) -> tuple:
@@ -29,8 +32,15 @@ class ArchitectureSetting(ParamSetting):
             try:
                 architecture = architecture.lower()
                 self.model_settings.architecture = architecture
+                if self.model_settings.model is not None:
+                    self.model_settings.model.to("cpu")
+                    self.model_settings.model = None
+                    if "cuda" in self.model_settings.device:
+                        torch.cuda.empty_cache()
                 self.general_settings.tracked_classes = []
-                self.predictor_parameters = None
+                self.general_settings.classes = []
+                self.general_settings.showed_classes = []
+
             except Exception as e:
                 self.logger.exception(e)
 
@@ -39,10 +49,10 @@ class ArchitectureSetting(ParamSetting):
 
         if self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold():
             return (gr.Dropdown(choices=[config.weights for config in self.config_parser.all_configs if config.architecture == architecture], interactive=True),
-                    gr.Text(self.general_settings.input_width if self.general_settings.input_width else 0, interactive=True),
-                    gr.Text(self.general_settings.input_height if self.general_settings.input_height else 0, interactive=True),
+                    gr.Text(str(self.general_settings.input_width) if self.general_settings.input_width else 0, interactive=True),
+                    gr.Text(str(self.general_settings.input_height) if self.general_settings.input_height else 0, interactive=True),
                     gr.CheckboxGroup(label="Which objects should be tracked", choices=self.config_parser.current_config.classes, value=self.general_settings.tracked_classes, interactive=True))
         else:
             return (gr.Dropdown(choices=[config.weights for config in self.config_parser.all_configs if config.architecture == architecture], interactive=True),
-                    gr.Text(self.general_settings.input_width if self.general_settings.input_width else 0, interactive=True),
-                    gr.Text(self.general_settings.input_height if self.general_settings.input_height else 0, interactive=True))
+                    gr.Text(str(self.general_settings.input_width) if self.general_settings.input_width else 0, interactive=True),
+                    gr.Text(str(self.general_settings.input_height) if self.general_settings.input_height else 0, interactive=True))

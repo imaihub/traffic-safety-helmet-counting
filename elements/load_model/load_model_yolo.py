@@ -23,4 +23,5 @@ class LoadModelYolo(LoadModel):
         """
         Loads in a monolytics YOLO model and returns it
         """
+        self.logger.info(f"Loading {self.weights_file}")
         return YOLO(model=str(os.path.join(self.base_path, "models", "architectures", self.model_name, self.weights_file))).to(self.device)

@@ -16,6 +16,7 @@ class ModelConfig:
     task_type: Optional[str] = None
     classes: Optional[list[str]] = field(default_factory=list)
     tracked_classes: Optional[list[str]] = field(default_factory=list)
+    showed_classes: Optional[list[str]] = field(default_factory=list)
     load_model_type: Optional[str] = None
     box_threshold: Optional[float] = None
     bpp: int = 8

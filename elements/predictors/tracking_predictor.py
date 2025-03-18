@@ -6,15 +6,15 @@ import boxmot
 
 from elements.display import Display
 from elements.enums import InputMode
-from elements.settings.model_settings import ModelSettings
 from elements.predictors.camera import PredictorTrackerCamera
 from elements.predictors.parameters import PredictorParameters
 from elements.predictors.predictor_factory import PredictorFactory
 from elements.predictors.video_input import PredictorTrackerInput
 from elements.processing.postprocessing.models.yolo import decode_yolo_boxes_pt
 from elements.settings.general_settings import GeneralSettings
+from elements.settings.model_settings import ModelSettings
 from elements.settings.tracking_settings import TrackingSettings
-from elements.trackers.general import GeneralizedProcessor
+from elements.trackers.tracker_factory import TrackerFactory
 
 
 class PredictTracking(PredictorFactory):
@@ -39,20 +39,20 @@ class PredictTracking(PredictorFactory):
         if self.tracking_settings.tracker.casefold() == "deepocsort":
             tracker_generator = partial(boxmot.DeepOcSort,
                                         asso_func="centroid",
-                                        device=self.model_settings.device,
-                                        # det_thresh=float(self.tracking_settings.param_options["DETECTION_THRESHOLD"]),
                                         half=True,
-                                        # min_hits=int(self.tracking_settings.param_options["MINIMUM_HITS"]),
+                                        device=self.model_settings.device,
                                         reid_weights=Path("osnet_x1_0_msmt17.pt"),
-                                        per_class=True, )
+                                        per_class=True)
         else:
             self.logger.exception(f"Unknown tracking case: {self.tracking_settings.tracker}")
             RuntimeError(f"Unknown tracking case: {self.tracking_settings.tracker}")
 
-        tracker_model = tracker_generator()
-        tracker_processor = GeneralizedProcessor(general_settings=self.general_settings, min_hits=int(self.tracking_settings.param_options["MINIMUM_HITS"]), tracker=tracker_model)
+        self.tracking_settings.tracker_generator = tracker_generator
 
-        self.tracking_settings.reset = False  # Tracker is updated with new parameters so no more resets
+        _, tracker_processor = TrackerFactory.create(general_settings=self.general_settings,
+                                                                 tracking_settings=self.tracking_settings)
+
+        self.tracking_settings.reset = False
 
         predictor_parameters = PredictorParameters(result_processor=decode_yolo_boxes_pt,
                                                    tracker_processor=tracker_processor,
@@ -61,17 +61,17 @@ class PredictTracking(PredictorFactory):
                                                    input_path=self.input_path)
 
         if self.general_settings.camera_mode == InputMode.CAMERA:
-            predictor = PredictorTrackerCamera(model=self.model_settings.model,
-                                               general_settings=self.general_settings,
-                                               model_settings=self.model_settings,
-                                               tracking_settings=self.tracking_settings,
-                                               predictor_parameters=predictor_parameters,
-                                               websocket_server=self.websocket_server)
+            predictor = PredictorTrackerCamera(
+                general_settings=self.general_settings,
+                model_settings=self.model_settings,
+                tracking_settings=self.tracking_settings,
+                predictor_parameters=predictor_parameters,
+                websocket_server=self.websocket_server)
         else:
-            predictor = PredictorTrackerInput(model=self.model_settings.model,
-                                              general_settings=self.general_settings,
-                                              model_settings=self.model_settings,
-                                              tracking_settings=self.tracking_settings,
-                                              predictor_parameters=predictor_parameters,
-                                              websocket_server=self.websocket_server)
+            predictor = PredictorTrackerInput(
+                general_settings=self.general_settings,
+                model_settings=self.model_settings,
+                tracking_settings=self.tracking_settings,
+                predictor_parameters=predictor_parameters,
+                websocket_server=self.websocket_server)
         return predictor, predictor_parameters

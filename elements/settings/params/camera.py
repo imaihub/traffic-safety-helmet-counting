@@ -12,7 +12,7 @@ class CameraDimensionSetting(ParamSetting):
         super().__init__(locker)
         self.general_settings = general_settings
 
-    def update(self, width: int, height: int):
+    def update(self, width: int, height: int) -> None:
         with self.locker.lock:
             self.logger.info(f"Changed camera dimensions from {str(self.general_settings.camera_width)}x{str(self.general_settings.camera_height)} "
                              f"to {width}x{height}")
@@ -22,14 +22,14 @@ class CameraDimensionSetting(ParamSetting):
 
 class CameraIndexSetting(ParamSetting):
     """
-    Changes camera based on the camera index..
+    Changes camera based on the camera index.
     """
 
     def __init__(self, general_settings: GeneralSettings, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings
 
-    def update(self, index: int):
+    def update(self, index: int) -> None:
         with self.locker.lock:
             self.logger.info(f"Changed camera index from {str(self.general_settings.camera_index)} "
                              f"to {str(index)}")

@@ -12,7 +12,7 @@ class BPPSetting(ParamSetting):
         super().__init__(locker)
         self.general_settings = general_settings
 
-    def update(self, bpp: int):
+    def update(self, bpp: int) -> None:
         with self.locker.lock:
             self.logger.info(f"Changed bpp from {str(self.general_settings.bpp)} to {str(bpp)}")
             self.general_settings.bpp = bpp

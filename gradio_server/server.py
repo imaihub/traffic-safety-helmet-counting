@@ -4,13 +4,13 @@ from argparse import ArgumentParser
 
 import gradio as gr
 
-import src.js
 from elements.enums import Tasks, InputMode
-from elements.settings.model_settings import ModelSettings
 from elements.settings.general_settings import GeneralSettings
+from elements.settings.model_settings import ModelSettings
 from elements.settings.settings_orchestrator import SettingsOrchestrator
 from elements.settings.tracking_settings import TrackingSettings
-from gradio_server.css_injection import css_injection
+from gradio_server.injections.css_injection import css_injection
+from gradio_server.injections.js_injection import js_injection
 from gradio_server.model_manager import ModelManager
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -75,7 +75,7 @@ if Tasks.TRACKING.name.casefold() in args.type.casefold():
                     realistic_processing_box.change(setting_orchestrator.realistic_processing_setting.update, inputs=realistic_processing_box)
 
                     gamma_correction_bool_box = gr.Checkbox(label="Gamma correction", interactive=True, value=general_settings.gamma_correction_bool, visible=False)
-                    gamma_value_box = gr.Text(label="Gamma value", interactive=True, value=str(general_settings.gamma_value), visible=False)
+                    gamma_correction_value_box = gr.Text(label="Gamma value", interactive=True, value=str(general_settings.gamma_correction_value), visible=False)
 
                 with gr.Column():
                     trackers = gr.Dropdown(label="Trackers", interactive=True, choices=config.trackers)
@@ -91,7 +91,7 @@ if Tasks.TRACKING.name.casefold() in args.type.casefold():
                     tracker_option_4.change(setting_orchestrator.tracker_option_4_setting.update, inputs=tracker_option_4)
 
                 with gr.Column():
-                    check_boxes = gr.CheckboxGroup(label="Which objects should be tracked", choices=config.current_config.classes, value=config.current_config.classes, interactive=True)
+                    check_boxes = gr.CheckboxGroup(label="Which objects should be tracked", choices=config.current_config.showed_classes, value=config.current_config.tracked_classes, interactive=True)
 
             with gr.Column():
                 input_image_box = gr.File(label="Input video", elem_id="video_in")
@@ -100,20 +100,21 @@ if Tasks.TRACKING.name.casefold() in args.type.casefold():
                 reset_tracker_stats_button = gr.Button(interactive=True, value="Reset tracker stats", visible=False)
                 image_out_box = gr.Video(interactive=False, elem_id="video_out", height="auto", width=1500)
 
-                input_image_box.upload(fn=model_manager.predict_gui, inputs=[input_image_box], outputs=[analysis_button, reset_tracker_stats_button])
+                input_image_box.upload(fn=model_manager.predict_gui, inputs=[input_image_box], outputs=[analysis_button, reset_tracker_stats_button]).then(model_manager.await_analysis, outputs=[input_image_box, analysis_button, reset_tracker_stats_button])
+
 
         analysis_button.click(model_manager.toggle_analysis, outputs=[analysis_button, reset_tracker_stats_button])
         camera_button.click(model_manager.switch_camera_mode, outputs=[camera_button, input_image_box, analysis_button, reset_tracker_stats_button])
         reset_tracker_stats_button.click(model_manager.reset_tracker)
 
         advanced_view.change(setting_orchestrator.advanced_view_setting.update, inputs=advanced_view,
-                             outputs=[bit_box, width_input_box, height_input_box, box_threshold_box, gamma_correction_bool_box, gamma_value_box, tracker_option_1, tracker_option_2, tracker_option_3, tracker_option_4, realistic_processing_box])
+                             outputs=[bit_box, width_input_box, height_input_box, box_threshold_box, gamma_correction_bool_box, gamma_correction_value_box, tracker_option_1, tracker_option_2, tracker_option_3, tracker_option_4, realistic_processing_box])
 
         device_box.change(setting_orchestrator.device_setting.update, inputs=device_box)
         bit_box.change(setting_orchestrator.bpp_setting.update, inputs=bit_box)
 
         gamma_correction_bool_box.change(setting_orchestrator.gamma_correction_bool_setting.update, inputs=gamma_correction_bool_box)
-        gamma_value_box.change(setting_orchestrator.gamma_correction_value_setting.update, inputs=gamma_value_box)
+        gamma_correction_value_box.change(setting_orchestrator.gamma_correction_value_setting.update, inputs=gamma_correction_value_box)
         check_boxes.change(setting_orchestrator.classes_setting.update, inputs=check_boxes)
 
         output_folder.change(setting_orchestrator.output_folder_setting.update, inputs=output_folder)
@@ -121,11 +122,10 @@ if Tasks.TRACKING.name.casefold() in args.type.casefold():
         model_architectures.change(fn=setting_orchestrator.architecture_setting.update,
                                    inputs=model_architectures,
                                    outputs=[weights, width_input_box, height_input_box, check_boxes])
-
         weights.change(fn=setting_orchestrator.weights_setting.update,
                        inputs=weights,
                        outputs=check_boxes)
 
-        demo.load(fn=None, js=src.js.script_new)
+        demo.load(fn=None, js=js_injection)
 
 demo.launch()

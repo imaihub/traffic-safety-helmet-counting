@@ -1,8 +1,11 @@
+import asyncio
 import traceback
 
+import gradio as gr
 import torch
 
 from elements.enums import ApplicationMode
+from elements.locker import Locker
 from elements.predictors.base_predictor import PredictorBase
 from elements.predictors.parameters import PredictorParameters
 from elements.predictors.utils.video_reader import VideoReader
@@ -11,8 +14,6 @@ from elements.settings.model_settings import ModelSettings
 from elements.settings.tracking_settings import TrackingSettings
 from elements.timer import Timer
 
-import gradio as gr
-
 
 class PredictorTrackerInput(PredictorBase):
     """
@@ -20,22 +21,22 @@ class PredictorTrackerInput(PredictorBase):
     It returns the path of a fully analyzed video for Gradio to show it. This means users don't get to see "realtime" analysis
     """
 
-    def __init__(self, model: torch.nn.Module,
+    def __init__(self,
                  general_settings: GeneralSettings,
                  model_settings: ModelSettings,
                  tracking_settings: TrackingSettings,
                  predictor_parameters: PredictorParameters,
                  websocket_server):
-        super().__init__(model=model,
-                         general_settings=general_settings,
-                         model_settings=model_settings,
-                         tracking_settings=tracking_settings,
-                         predictor_parameters=predictor_parameters,
-                         websocket_server=websocket_server)
+        super().__init__(
+            general_settings=general_settings,
+            model_settings=model_settings,
+            tracking_settings=tracking_settings,
+            predictor_parameters=predictor_parameters,
+            websocket_server=websocket_server)
         self.last_times = [0, 0]
 
     @torch.no_grad()
-    def predict(self):
+    def predict(self, locker: Locker):
         """
         Processes a single video from the input_path passed. Returns the path with a copy of the resulting video for Gradio
         """
@@ -44,30 +45,52 @@ class PredictorTrackerInput(PredictorBase):
                 self.wait_for_websocket()
 
             with VideoReader(self.predictor_parameters.input_path) as video_reader:
-                self.result_saver.initiate_result_video(width=self.general_settings.screen_width, height=self.general_settings.screen_height, fps=video_reader.fps)
+                self.result_saver.initiate_result_video(width=self.general_settings.screen_width,
+                                                        height=self.general_settings.screen_height,
+                                                        fps=video_reader.fps)
                 processing_timer = Timer("Process frame", wait_time=(1 / video_reader.fps) * 1000 if self.general_settings.realistic_processing else 0, print_time=True)
 
                 with self.result_saver:
                     for current_frame, image in video_reader.frames(skip_frames=self.predictor_parameters.skip_frames):
-                        with processing_timer:
-                            if self.aborting:
-                                break
+                        try:
+                            with processing_timer:
+                                if self.aborting:
+                                    break
 
-                            if current_frame % 50 == 0:
-                                gr.Info(f"{(current_frame / video_reader.total_frames) * 100}% Done", duration=2)
+                                if current_frame % 50 == 0:
+                                    gr.Info(f"{(current_frame / video_reader.total_frames) * 100}% Done", duration=2)
 
-                            with Timer("Process a single frame", print_time=True):
-                                show_image, save_image = self.process_frame(image=image, display=self.predictor_parameters.display)
+                                while self.model_settings.model is None:
+                                    self.logger.info("Waiting for model to be loaded...")
+                                    asyncio.sleep(0.1)
 
-                            self.result_saver.append_image_to_video(image=show_image)
-                            if save_image:
-                                self.result_saver.save_image(image=show_image)
+                                with Timer("Process a single frame", print_time=True):
+                                    with Timer("Acquiring Lock", print_time=True):
+                                        locker.lock.acquire()
 
-                            self.set_response(image=show_image)
+                                    with Timer("Updating settings", print_time=True):
+                                        if self.tracking_settings.reset:
+                                            self.update_settings()
 
-                            self.last_times.append(processing_timer.get_timings()["real_time"])
-                            if len(self.last_times) > 5:
-                                self.last_times = self.last_times[1:]
+                                    with Timer("Processing frame", print_time=True):
+                                        show_image, save_image = self.process_frame(image=image, display=self.predictor_parameters.display)
+
+                                    locker.lock.release()
+
+                                self.result_saver.append_image_to_video(image=show_image)
+                                if save_image:
+                                    self.result_saver.save_image(image=show_image)
+
+                                self.set_response(image=show_image)
+
+                                self.last_times.append(processing_timer.get_timings()["real_time"])
+                                if len(self.last_times) > 5:
+                                    self.last_times = self.last_times[1:]
+                        except Exception as e:
+                            traceback.print_exc()
+                            self.logger.error(e)
+                            if locker.lock.locked():
+                                locker.lock.release()
 
             if self.general_settings.application_mode == ApplicationMode.GUI:
                 self.websocket.finish_connection()

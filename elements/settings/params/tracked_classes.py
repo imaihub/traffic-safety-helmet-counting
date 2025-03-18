@@ -11,7 +11,7 @@ class TrackedClassesSetting(ParamSetting):
         super().__init__(locker)
         self.general_settings = general_settings
 
-    def update(self, classes: list):
+    def update(self, classes: list) -> None:
         with self.locker.lock:
             self.general_settings.tracked_classes = classes
 

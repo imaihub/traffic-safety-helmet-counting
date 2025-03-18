@@ -8,10 +8,10 @@ class BoundingBox:
 
     def __init__(self, class_id: int = -1, class_name: Optional[str] = None):
         self.track_id: Optional[int] = None
-        self.x1: Optional[float] = None
-        self.y1: Optional[float] = None
-        self.x2: Optional[float] = None
-        self.y2: Optional[float] = None
+        self.x1: float = 0
+        self.y1: float = 0
+        self.x2: float = 0
+        self.y2: float = 0
         self.class_id: int = class_id
         self.class_name: Optional[str] = class_name
         self.confidence: Optional[float] = None
@@ -51,7 +51,7 @@ class BoundingBox:
         """Get the class name from a list of class names if not explicitly set."""
         return self.class_name or classes[self.class_id]
 
-    def set_minmax_xy(self, xmin: float, ymin: float, xmax: float, ymax: float, relative: bool = False):
+    def set_minmax_xy(self, xmin: float, ymin: float, xmax: float, ymax: float, relative: bool = False) -> None:
         """Set bounding box using min/max coordinates."""
         self.x1, self.y1, self.x2, self.y2 = float(xmin), float(ymin), float(xmax), float(ymax)
         self._relative = relative

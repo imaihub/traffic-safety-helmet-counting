@@ -7,8 +7,10 @@ class Display:
     This class enables functionality around visualizing numpy arrays with cv2.imshow
     """
 
-    def __init__(self, window_name: str = "data"):
+    def __init__(self, window_name: str = "data") -> None:
         self.window_name = window_name
+        cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
+        cv2.setWindowProperty(self.window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
     def show_image(self, image: np.ndarray) -> None:
         """

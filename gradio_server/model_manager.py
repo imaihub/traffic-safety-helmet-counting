@@ -9,12 +9,13 @@ from config.config_parser import ConfigParser
 from elements.display import Display
 from elements.enums import Tasks, InputMode
 from elements.locker import Locker
-from elements.settings.model_settings import ModelSettings
+from elements.predictors.base_predictor import PredictorBase
+from elements.predictors.parameters import PredictorParameters
 from elements.predictors.tracking_predictor import PredictTracking
 from elements.settings.general_settings import GeneralSettings
+from elements.settings.model_settings import ModelSettings
 from elements.settings.tracking_settings import TrackingSettings
 from elements.utils import Logger
-from gradio_server.utils import check_model_settings
 from gradio_server.websocket_manager.websocket_manager import WebSocketServer
 
 logger = Logger().setup_logger()
@@ -38,17 +39,17 @@ class ModelManager:
         self.template = args.template
         self.config_parser = ConfigParser(template=self.template)
 
-        self.predictor = None
-        self.websocket_server = None
+        self.predictor: Optional[PredictorBase] = None
+        self.websocket_server: Optional[WebSocketServer] = None
+        self.predictor_parameters: Optional[PredictorParameters] = None
+        self.analysis_thread: Optional[threading.Thread] = None
 
-        self.predictor_parameters = None
-        self.analysis_thread = None
+        self.analyzing: bool = False
 
-        self.analyzing = False
+        self.images_boxes: list = []
 
-        self.images_boxes = []
-
-    def initialize_settings(self, model_settings: ModelSettings, general_settings: GeneralSettings, tracking_settings: TrackingSettings):
+    def initialize_settings(self, model_settings: ModelSettings, general_settings: GeneralSettings,
+                            tracking_settings: TrackingSettings) -> None:
         """
         Simply sets the setting objects to the passed ones
         """
@@ -56,7 +57,7 @@ class ModelManager:
         self.general_settings = general_settings
         self.model_settings = model_settings
 
-    def get_parsed_config(self):
+    def get_parsed_config(self) -> ConfigParser:
         """
         Getter for the object holding the config info
         """
@@ -70,7 +71,7 @@ class ModelManager:
             self.websocket_server = WebSocketServer()
             self.websocket_server.run_websocket_server()
 
-    def toggle_analysis(self):
+    def toggle_analysis(self) -> list[gr.Button]:
         """
         Start and turn off the camera feed analysis. Saves resulting video on quitting. Can also cancel current video analyses
         """
@@ -89,12 +90,11 @@ class ModelManager:
                 return [gr.Button(interactive=True, value="Stop camera analysis"),
                         gr.Button(interactive=True, value="Reset tracker stats", visible=True)]
         else:
-            if self.predictor:
-                self.predictor.abort()
-                return [gr.Button(interactive=True, value="Cancel processing"),
-                        gr.Button(interactive=True, value="Reset tracker stats", visible=True)]
+            self.predictor.abort()
+            return [gr.Button(interactive=True, value="Cancel processing"),
+                    gr.Button(interactive=True, value="Reset tracker stats", visible=True)]
 
-    def switch_camera_mode(self):
+    def switch_camera_mode(self) -> list[gr.Component]:
         """
         Changes the mode of the application, updates GUI accordingly
         """
@@ -112,13 +112,16 @@ class ModelManager:
                     gr.Button(value="Cancel processing", visible=False),
                     gr.Button(interactive=True, value="Reset tracker stats", visible=False)]
 
+    def await_analysis(self) -> list[Union[gr.Component, None]]:
+        self.analysis_thread.join()
+        analysis_button = gr.Button(interactive=True, value="Start camera analysis", visible=False)
+        reset_tracker_stats_button = gr.Button(interactive=True, value="Reset tracker stats", visible=False)
+        return [gr.update(value=None, interactive=True), analysis_button, reset_tracker_stats_button]
+
     def reset_tracker(self):
         """
-        Resets the stats in the tracker
+        Resets the tracker including statistics
         """
-        if self.predictor_parameters is not None:
-            if self.predictor_parameters.tracker_processor is not None:
-                self.predictor_parameters.tracker_processor.reset()
         self.tracking_settings.reset = True
 
     def predict_gui(self, input_path: Union[str, List]):
@@ -130,8 +133,16 @@ class ModelManager:
         return [gr.Button(interactive=True, value="Cancel processing", visible=True),
                 gr.Button(interactive=True, value="Reset tracker stats", visible=True)]
 
+    def check_model_settings(self):
+        if not self.model_settings.architecture or not self.model_settings.weights_path:
+            self.logger.warning("Input present but no model, tracker or weights")
+            gr.Warning("Input present but no model, tracker or weights")
+            return None
+        return True
+
+
     @torch.no_grad()
-    def predict(self, input_path: Optional[Union[str, List]], display: Optional[Display] = None, skip_frames: Optional[int] = 0):
+    def predict(self, input_path: Optional[Union[str, list]], display: Optional[Display] = None, skip_frames: Optional[int] = 0):
         """
         Standard predict function called by the Gradio component. The supported tasks include: object detection and segmentation and tracking. Tracking uses a different Predictor class to process the images
 
@@ -139,31 +150,24 @@ class ModelManager:
         :param input_path: path to an image or video
         :param skip_frames: amount of frames to skip in the case of processing a video file. Useful for debugging
         """
-        if not check_model_settings(self):
+        if not self.check_model_settings():
             return None
 
-        if (self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold() and
-                self.predictor is not None and not type(self.predictor.model.model) is type(self.model_settings.model.model)):  # Live update of the model
-            self.predictor.update_model(self.model_settings.model)
-
         if self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold():
-            if self.tracking_settings.reset or self.predictor_parameters is None or self.predictor_parameters.tracker_processor is None:
-                self.predictor, self.predictor_parameters = PredictTracking(general_settings=self.general_settings,
-                                                                            model_settings=self.model_settings,
-                                                                            tracking_settings=self.tracking_settings,
-                                                                            websocket_server=self.websocket_server,
-                                                                            display=display,
-                                                                            skip_frames=skip_frames,
-                                                                            input_path=input_path).get_predictor()
+            self.predictor, self.predictor_parameters = PredictTracking(general_settings=self.general_settings,
+                                                                        model_settings=self.model_settings,
+                                                                        tracking_settings=self.tracking_settings,
+                                                                        websocket_server=self.websocket_server,
+                                                                        display=display,
+                                                                        skip_frames=skip_frames,
+                                                                        input_path=input_path).get_predictor()
         else:
             logger.exception("Task types other than tracking are not supported")
             gr.Warning("Task types other than tracking are not supported")
             return None
 
-        self.locker.lock.acquire()
         try:
-            result = self.predictor.predict()
-            self.locker.lock.release()
+            result = self.predictor.predict(locker=self.locker)
 
         except Exception as e:
             if self.locker.lock.locked():

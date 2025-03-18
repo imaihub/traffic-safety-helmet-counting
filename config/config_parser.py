@@ -27,7 +27,7 @@ class ConfigParser:
 
         self.initialize()
 
-    def initialize(self):
+    def initialize(self) -> None:
         """
         Initialize the configuration by loading weights and validating against the config file.
         """
@@ -48,10 +48,13 @@ class ConfigParser:
         except Exception as e:
             logger.exception(f"Failed to initialize ConfigParser: {e}")
 
-    def update_current_config(self):
-        self.current_config = self.get_current_config()
+    def update_current_config(self, architecture: str, weights: str) -> None:
+        """
+        Update the current config with the new config.
+        """
+        self.current_config = self.get_current_config(architecture=architecture, weights=weights)
 
-    def _assemble_tracker_list(self):
+    def _assemble_tracker_list(self) -> None:
         """
         Fill the tracker list against the config file.
         """
@@ -87,33 +90,37 @@ class ConfigParser:
         model_config.task_type = model_config_data.get("task_type")
         model_config.version = model_config_data.get("version")
         model_config.normalize_type = model_config_data.get("normalize_type")
-        self._add_to_list_in_dict(self.task_type_models, model_config.task_type, model_config)
+        self._add_to_list_in_dict(dictionary=self.task_type_models, key=model_config.task_type, value=model_config)
 
         model_config.classes = model_config_data.get("weights").get(weights).get("classes", [])
         model_config.tracked_classes = model_config_data.get("weights").get(weights).get("tracked_classes", [])
+        model_config.showed_classes = model_config_data.get("weights").get(weights).get("showed_classes", [])
         model_config.load_model_type = model_config_data.get("load_model_type")
         model_config.box_threshold = model_config_data.get("box_threshold")
 
         return model_config
 
-    def get_trackers(self):
+    def get_trackers(self) -> list[str]:
         """
         Getter for the tracker list
         """
         return self.trackers
 
-    def get_current_config(self):
+    def get_current_config(self, architecture: Optional[str] = None, weights: Optional[str] = None) -> Optional[ModelConfig]:
         """
         Get the current ModelConfig based on a template.
         """
         try:
             config_file = self.read_config_content()
-            template_config = config_file.get("templates", {}).get(self.template, {})
-            weights = template_config.get("weights")
-            model = template_config.get("model")
-            tracker = template_config.get("tracker")
+            if architecture is None or weights is None:
+                template_config = config_file.get("templates", {}).get(self.template, {})
+                weights = template_config.get("weights")
+                architecture = template_config.get("architecture")
+
+            tracker = config_file.get(architecture, {}).get("tracker")
+
             for config in self.all_configs:
-                if config.weights == weights and config.architecture == model:
+                if config.weights == weights and config.architecture == architecture:
                     config.tracker = tracker
                     return config
 
@@ -142,7 +149,7 @@ class ConfigParser:
             logger.error(f"Error parsing YAML file: {e}")
             raise
 
-    def _add_to_list_in_dict(self, dictionary: dict, key: str, value):
+    def _add_to_list_in_dict(self, dictionary: dict, key: str, value: ModelConfig) -> None:
         """
         Add a value to a list in a dictionary. Create the list if it doesn't exist.
         """

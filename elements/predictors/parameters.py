@@ -5,7 +5,7 @@ from elements.display import Display
 from elements.trackers.tracker_processor import TrackerProcessor
 
 
-@dataclass(frozen=True)
+@dataclass
 class PredictorParameters:
     """
     This class consists of fields that are necessary for the processing of the images by the predictor.

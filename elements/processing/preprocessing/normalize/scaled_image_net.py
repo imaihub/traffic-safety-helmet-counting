@@ -8,7 +8,7 @@ class NormalizeScaledImageNet(Processing):
     Normalize an image using scaled (using the max pixel value derived the bit value of the camera used) from ImageNet mean and std values
     """
 
-    def __init__(self, bit: int = 8):
+    def __init__(self, bit: int = 8) -> None:
         super().__init__()
         self.type = type
         self.bit = bit
@@ -16,7 +16,7 @@ class NormalizeScaledImageNet(Processing):
         self.mean = torch.tensor([0.485 * self.bit_range, 0.456 * self.bit_range, 0.406 * self.bit_range], dtype=torch.float32).view((3, 1, 1))
         self.std = torch.tensor([0.229 * self.bit_range, 0.224 * self.bit_range, 0.225 * self.bit_range], dtype=torch.float32).view((3, 1, 1))
 
-    def apply(self, image: torch.Tensor):
+    def apply(self, image: torch.Tensor) -> torch.Tensor:
         """
         Apply the normalization on the passed image
         """
@@ -31,7 +31,7 @@ class DenormalizeScaledImageNet(Processing):
     Denormalize an image using scaled (using the max pixel value derived the bit value of the camera used) from ImageNet mean and std values
     """
 
-    def __init__(self, bit: int = 8):
+    def __init__(self, bit: int = 8) -> None:
         super().__init__()
         self.type = type
         self.bit = bit
@@ -39,7 +39,7 @@ class DenormalizeScaledImageNet(Processing):
         self.mean = torch.tensor([0.485 * self.bit_range, 0.456 * self.bit_range, 0.406 * self.bit_range], dtype=torch.float32).view(3, 1, 1)
         self.std = torch.tensor([0.229 * self.bit_range, 0.224 * self.bit_range, 0.225 * self.bit_range], dtype=torch.float32).view(3, 1, 1)
 
-    def apply(self, image: torch.Tensor):
+    def apply(self, image: torch.Tensor) -> torch.Tensor:
         """
         Apply the denormalization on the passed image
         """

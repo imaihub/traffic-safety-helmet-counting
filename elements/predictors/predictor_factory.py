@@ -2,8 +2,9 @@ from abc import ABC, abstractmethod
 from typing import Optional, Union, List
 
 from elements.display import Display
-from elements.settings.model_settings import ModelSettings
+from elements.predictors.base_predictor import PredictorBase
 from elements.settings.general_settings import GeneralSettings
+from elements.settings.model_settings import ModelSettings
 from elements.settings.tracking_settings import TrackingSettings
 from elements.utils import Logger
 
@@ -30,5 +31,5 @@ class PredictorFactory(ABC):
         self.input_path = input_path
 
     @abstractmethod
-    def get_predictor(self):
+    def get_predictor(self) -> PredictorBase:
         pass

@@ -1,6 +1,6 @@
 import multiprocessing
 import time
-from typing import Optional
+from typing import Optional, Self
 
 import torch
 
@@ -18,6 +18,7 @@ class Timer:
             include_gpu: Optional[bool] = False,
             wait_time: Optional[int] = None,  # In milliseconds
             print_time: Optional[bool] = False,
+            include_cpu_time: Optional[bool] = False,
     ):
         self.logger = Logger.setup_logger()
 
@@ -25,19 +26,20 @@ class Timer:
         self.wait_time = wait_time
         self.include_gpu = include_gpu
         self.print_time_bool = print_time
-        self.start_real = None
-        self.start_cpu = None
-        self.end_real = None
-        self.end_cpu = None
+        self.start_real: float = 0
+        self.start_cpu: float = 0
+        self.end_real: float = 0
+        self.end_cpu: float = 0
+        self.include_cpu_time = include_cpu_time
 
-    def __enter__(self):
+    def __enter__(self) -> Self:
         """
         Entering function of the ContextManager
         """
         self.start()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         """
         Exiting function of the ContextManager
         """
@@ -45,7 +47,7 @@ class Timer:
         self.stop()
 
         if self.print_time_bool:
-            self.print_time()
+            self.print_time(include_cpu_time=self.include_cpu_time)
 
         if self.wait_time:
             self.wait_until()
@@ -79,14 +81,15 @@ class Timer:
             self.stop()
         return self.end_real - self.start_real
 
-    def print_time(self) -> None:
+    def print_time(self, include_cpu_time: bool = False) -> None:
         """
         Prints the time of the code
         """
         real_time = self.elapsed_real_time()
-        cpu_time = self.end_cpu - self.start_cpu
         self.logger.info(f"Real time for {self.name}: {real_time:.4f} seconds")
-        self.logger.info(f"CPU time for {self.name}: {cpu_time:.4f} seconds")
+        if include_cpu_time:
+            cpu_time = self.end_cpu - self.start_cpu
+            self.logger.info(f"CPU time for {self.name}: {cpu_time:.4f} seconds")
 
     def reset(self) -> None:
         """
@@ -99,7 +102,7 @@ class Timer:
         """
         Wait until a certain amount of milliseconds is passed from the moment the timer started
         """
-        if not self.wait_time:
+        if self.wait_time is None:
             self.logger.warning("Wait time never set, thus cannot wait until a specific time")
 
         # Convert wait_time from milliseconds to seconds

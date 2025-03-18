@@ -23,14 +23,14 @@ class TrackerProcessor(ABC):
         self.logger = Logger.setup_logger()
         self.general_settings = general_settings
         self.tracks: dict = {}
-        self.counts: dict = {k: 0 for k in self.general_settings.classes}
+        self.counts: dict[str, int] = {k: 0 for k in self.general_settings.classes}
         self.color_map = get_color_map(self.general_settings.classes)
 
-    def reset(self):
+    def reset_count(self) -> None:
         """
         Resets the count of the tracker
         """
-        self.logger.info("Resetting tracker")
+        self.logger.info("Resetting tracker count")
         self.count = 0
         self.counts = {k: 0 for k in self.general_settings.classes}
 
@@ -45,7 +45,7 @@ class TrackerProcessor(ABC):
         """
         Passes the detections to the BoxMot tracker object so it can look whether they belong to an existing track of a new one
         """
-        tracker_tracks = sum(self.tracker.per_class_active_tracks.values(), [])
+        tracker_tracks: list = sum(self.tracker.per_class_active_tracks.values(), [])
         new_potential_active_tracks = self.tracker.update(np.asarray(boxes), image)
         active_tracks = []
         for potential_active_track in new_potential_active_tracks:
@@ -101,7 +101,7 @@ class TrackerProcessor(ABC):
         text = ""
         for c in self.counts.keys():
             if c in self.general_settings.tracked_classes:
-                text += f"{str(c)}: {self.counts[c]}\n"
+                text += f"{str(c)}: {str(self.counts[c])}\n"
         return text
 
     def get_boxes_from_active_tracks(self, active_tracks: list) -> list[BoundingBox]:

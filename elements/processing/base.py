@@ -11,5 +11,5 @@ class Processing(Protocol):
     """
 
     @abstractmethod
-    def apply(self, image: Union[np.ndarray, torch.Tensor]):
+    def apply(self, image: Union[np.ndarray, torch.Tensor]) -> Union[np.ndarray, torch.Tensor]:
         pass

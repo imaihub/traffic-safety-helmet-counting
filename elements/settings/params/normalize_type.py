@@ -13,7 +13,7 @@ class NormalizeTypeSetting(ParamSetting):
         super().__init__(locker)
         self.general_settings = general_settings
 
-    def update(self, normalize_type: str):
+    def update(self, normalize_type: str) -> None:
         normalize_map = {
             NormalizeType.IMAGE_NET.name.lower(): NormalizeType.IMAGE_NET,
             NormalizeType.YOLO.name.lower(): NormalizeType.YOLO,

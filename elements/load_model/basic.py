@@ -8,7 +8,7 @@ from elements.utils import Logger
 logger = Logger.setup_logger()
 
 
-def dynamic_load_weights_pt(model: torch.nn.Module, weights: dict):
+def dynamic_load_weights_pt(model: torch.nn.Module, weights: dict) -> None:
     """
     Dynamically loads weights into a PyTorch model, handling potential mismatches in layer sizes.
     Provides verbose feedback on any mismatched layers and skips only those layers while keeping

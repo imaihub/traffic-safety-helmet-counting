@@ -12,7 +12,7 @@ class DeviceSetting(ParamSetting):
         super().__init__(locker)
         self.model_settings = model_settings
 
-    def update(self, device: str):
+    def update(self, device: str) -> None:
         with self.locker.lock:
             self.logger.info(f"Changed device from {str(self.model_settings.device)} to {str(device)}")
             if device is not self.model_settings.device:

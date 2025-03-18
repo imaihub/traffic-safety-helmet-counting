@@ -8,13 +8,13 @@ class NormalizeImageNet(Processing):
     Normalize an image using the basic ImageNet mean and std
     """
 
-    def __init__(self, device: str = "cuda"):
+    def __init__(self, device: str = "cuda") -> None:
         super().__init__()
         self.device = device
         self.mean = torch.tensor([0.485, 0.456, 0.406], dtype=torch.float32).view((3, 1, 1))
         self.std = torch.tensor([0.229, 0.224, 0.225], dtype=torch.float32).view((3, 1, 1))
 
-    def apply(self, image: torch.Tensor):
+    def apply(self, image: torch.Tensor) -> torch.Tensor:
         """
         Apply the normalization on the passed image
         """
@@ -29,7 +29,7 @@ class DenormalizeImageNet(Processing):
     Denormalize an image using the basic ImageNet mean and std
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.mean = torch.tensor([0.485, 0.456, 0.406], dtype=torch.float32).view((3, 1, 1))
         self.std = torch.tensor([0.229, 0.224, 0.225], dtype=torch.float32).view((3, 1, 1))
