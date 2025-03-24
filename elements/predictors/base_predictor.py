@@ -1,3 +1,4 @@
+import threading
 import time
 from abc import ABC, abstractmethod
 from copy import deepcopy
@@ -8,6 +9,7 @@ import numpy as np
 import pybase64
 import torch
 
+from elements.cycling_timer import CyclingTimer
 from elements.display import Display
 from elements.enums import ApplicationMode
 from elements.locker import Locker
@@ -22,6 +24,7 @@ from elements.settings.model_settings import ModelSettings
 from elements.settings.tracking_settings import TrackingSettings
 from elements.trackers.tracker_factory import TrackerFactory
 from elements.utils import Logger, get_color_map
+from elements.visualize import draw_progress_bar
 from gradio_server.websocket_manager.websocket_manager import WebSocketServer
 
 
@@ -47,6 +50,12 @@ class PredictorBase(ABC):
 
         self.aborting = None
         self.predictor_parameters = predictor_parameters
+
+        if self.general_settings.reset_stats_min > 0:
+            self.cycling_timer_lock = threading.Lock()
+            self.cycling_timer = CyclingTimer(name="Reset stats timer", minutes=self.general_settings.reset_stats_min, fn=self.update_settings, lock=self.cycling_timer_lock)
+            self.t = threading.Thread(target=self.cycling_timer.start)
+            self.t.start()
 
         self.predictor, self.box_processor, self.result_saver, self.combine_boxes = self.initialize_helpers()
 
@@ -164,8 +173,12 @@ class PredictorBase(ABC):
         visualization_image = self.predictor_parameters.tracker_processor.update_count(image=visualization_image)
 
         if display is not None:
-            display.show_image(cv2.cvtColor(visualization_image, cv2.COLOR_BGR2RGB))
+            if self.general_settings.reset_stats_min > 0:
+                left, percentage = self.cycling_timer.get_time_left()
+                text = "Resetting statistics in:"
+                visualization_image = draw_progress_bar(image=visualization_image, text=f"{text} {str(left)}", percentage=percentage)
 
+            display.show_image(cv2.cvtColor(visualization_image, cv2.COLOR_BGR2RGB))
         return visualization_image, save_image
 
     @torch.no_grad()

@@ -12,7 +12,7 @@ from elements.predictors.utils.video_reader import VideoReader
 from elements.settings.general_settings import GeneralSettings
 from elements.settings.model_settings import ModelSettings
 from elements.settings.tracking_settings import TrackingSettings
-from elements.timer import Timer
+from elements.benchmark_timer import BenchmarkTimer
 
 
 class PredictorTrackerInput(PredictorBase):
@@ -48,7 +48,7 @@ class PredictorTrackerInput(PredictorBase):
                 self.result_saver.initiate_result_video(width=self.general_settings.screen_width,
                                                         height=self.general_settings.screen_height,
                                                         fps=video_reader.fps)
-                processing_timer = Timer("Process frame", wait_time=(1 / video_reader.fps) * 1000 if self.general_settings.realistic_processing else 0, print_time=True)
+                processing_timer = BenchmarkTimer("Process frame", wait_time=(1 / video_reader.fps) * 1000 if self.general_settings.realistic_processing else 0, print_time=True)
 
                 with self.result_saver:
                     for current_frame, image in video_reader.frames(skip_frames=self.predictor_parameters.skip_frames):
@@ -64,15 +64,15 @@ class PredictorTrackerInput(PredictorBase):
                                     self.logger.info("Waiting for model to be loaded...")
                                     asyncio.sleep(0.1)
 
-                                with Timer("Process a single frame", print_time=True):
-                                    with Timer("Acquiring Lock", print_time=True):
+                                with BenchmarkTimer("Process a single frame", print_time=True):
+                                    with BenchmarkTimer("Acquiring Lock", print_time=True):
                                         locker.lock.acquire()
 
-                                    with Timer("Updating settings", print_time=True):
+                                    with BenchmarkTimer("Updating settings", print_time=True):
                                         if self.tracking_settings.reset:
                                             self.update_settings()
 
-                                    with Timer("Processing frame", print_time=True):
+                                    with BenchmarkTimer("Processing frame", print_time=True):
                                         show_image, save_image = self.process_frame(image=image, display=self.predictor_parameters.display)
 
                                     locker.lock.release()

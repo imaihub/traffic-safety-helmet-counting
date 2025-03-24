@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 
 from elements.display import Display
 from elements.enums import InputMode, ApplicationMode
+from elements.locker import Locker
 from elements.predictors.tracking_predictor import PredictTracking
 from elements.settings.general_settings import GeneralSettings
 from elements.settings.model_settings import ModelSettings
@@ -26,6 +27,7 @@ parser.add_argument('--camera-width', type=int, default=1920)
 parser.add_argument('--camera-height', type=int, default=1080)
 parser.add_argument('--camera-index', type=int, default=0)
 parser.add_argument('--save-all-frames', action="store_true")
+parser.add_argument('--reset-stats-min', type=float, default=0.0)
 
 args = parser.parse_args()
 
@@ -48,11 +50,11 @@ setting_orchestrator.screen_dimension_setting.update(width=args.screen_width, he
 setting_orchestrator.camera_dimension_setting.update(width=args.camera_width, height=args.camera_height)
 setting_orchestrator.camera_index_setting.update(index=args.camera_index)
 setting_orchestrator.save_all_frames_setting.update(save_all_frames=args.save_all_frames)
-
+setting_orchestrator.reset_stats_min.update(minutes=args.reset_stats_min)
 setting_orchestrator.initialize_values(config=config.current_config)
 
 general_settings.application_mode = ApplicationMode.CLI
-
+locker = Locker()
 display = Display()
 
 if args.camera_mode:
@@ -62,7 +64,7 @@ if args.camera_mode:
                                                       tracking_settings=tracking_settings,
                                                       display=display).get_predictor()
 
-    predictor.predict()
+    predictor.predict(locker=locker)
 else:
     setting_orchestrator.camera_mode_setting.update(InputMode.FILE)
     predictor, predictor_parameters = PredictTracking(general_settings=general_settings,
@@ -71,4 +73,4 @@ else:
                                                       display=display,
                                                       input_path=full_input_path).get_predictor()
 
-    predictor.predict()
+    predictor.predict(locker=locker)

@@ -22,6 +22,7 @@ class GeneralSettings:
         self.bpp: int = 8
         self.gamma_correction_bool: bool = False
         self.gamma_correction_value: float = 2.2
+        self.reset_stats_min: float = 0.0
         self.input_width: int = 0
         self.input_height: int = 0
         self.screen_width: int = 1920
