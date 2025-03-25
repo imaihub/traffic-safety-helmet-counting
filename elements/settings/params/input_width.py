@@ -13,5 +13,10 @@ class InputWidthSetting(ParamSetting):
 
     def update(self, input_width: int) -> None:
         with self.locker.lock:
-            self.logger.info(f"Changed input width from {str(self.general_settings.input_width)} to {str(input_width)}")
-            self.general_settings.input_width = int(input_width)
+            self.logger.info(f"Changing input width from {str(self.general_settings.input_width)} to {str(input_width)}")
+            try:
+                assert int(input_width) > 0
+                self.general_settings.input_width = int(input_width)
+            except Exception as e:
+                self.logger.exception(e)
+                self.logger.info(f"Sticking with an input width of {self.general_settings.input_width}")

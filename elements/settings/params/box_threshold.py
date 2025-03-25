@@ -15,6 +15,7 @@ class BoxThresholdSetting(ParamSetting):
         with self.locker.lock:
             self.logger.info(f"Changed box_threshold value from {str(self.general_settings.box_threshold)} to {str(box_threshold)}")
             try:
+                assert 0.0 < float(box_threshold) < 1.0
                 self.general_settings.box_threshold = float(box_threshold)
             except Exception as e:
                 self.logger.exception(e)

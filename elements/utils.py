@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 
 
-def get_color_map(classes: list, color_map_style: int = cv2.COLORMAP_JET) -> list:
+def get_color_map(classes: list, color_map_style: int = cv2.COLORMAP_SPRING) -> list:
     """
     Generate a color mapping where the class_ids gets matched with a specific color
     """

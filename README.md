@@ -11,9 +11,6 @@ Welcome to the repository containing code to count bikehelmets and cyclists in v
 6. [Demos Overview](#demos-overview)
    - [Gradio Demo](#gradio-demo)
    - [CLI Application](#cli-application)
-7. [Deployment](#deployment)
-   - [Ubuntu](#ubuntu)
-   - [Windows](#windows)
 
 ## Introduction
 
@@ -30,7 +27,7 @@ First, clone the repository to your local machine using the following command (T
 
 ```bash
 git clone https://github.com/imaihub/traffic-safety-helmet-counting.git
-cd your-repository
+cd traffic-safety-helmet-counting
 ```
 
 ## Creating a Conda Environment
@@ -90,15 +87,34 @@ This code also supports analyses through a CLI script.
 
 Run the CLI script with 
 
-``python scripts/cli.py``
+``python cli.py``
 
 If you want a local camera feed, add the argument --camera-mode like:
 
-``python scripts/cli.py --camera-mode``
+``python cli.py --camera-mode``
 
 If you want an analysis of a video file, add an --input argument pointing to the video file like:
 
-``python scripts/cli.py --input /path/to/video.mp4``
+``python cli.py --input /path/to/video.mp4``
+
+Below is a list of the relevant arguments. Some arguments are flags, others need a value, specified by the italic value after the argument.
+
+General:
+- --realistic: slows down processing in case of it being too fast to view
+- --gpu: use gpu for processing, else cpu
+- --screen-width *value*: output width, standard 1920
+- --screen-height *value*: output height, standard 1080
+
+Camera:
+- --camera-mode: select camera mode
+- --camera-index: index of camera to use
+- --save-all-frames: saves all frames from camera
+- --reset-stats-min *value*: interval of minutes to reset the count of the classes (standard 0, disabled)
+
+File input:
+- --input *value*: path to video file
+
+
 
 Here is an example of what you will see:
 

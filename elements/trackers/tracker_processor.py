@@ -86,7 +86,7 @@ class TrackerProcessor(ABC):
             text_color = tuple(int(v) for v in self.color_map[color_index][0])
 
             # Put text on the image
-            x = int(image_width / 1.5)  # X position for text placement
+            x = int(image_width / 1.3)  # X position for text placement
             cv2.putText(img, t, (x, y), cv2.FONT_HERSHEY_SIMPLEX, fontscale, text_color, thickness)
 
             # Update Y position for next line

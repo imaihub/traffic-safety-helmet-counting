@@ -14,5 +14,11 @@ class ResetStatsMinSetting(ParamSetting):
 
     def update(self, minutes: int) -> None:
         with self.locker.lock:
-            self.logger.info(f"Changed reset stats min from {str(self.general_settings.reset_stats_min)} to {str(minutes)}")
-            self.general_settings.reset_stats_min = minutes
+            self.logger.info(f"Changing reset stats min from {str(self.general_settings.reset_stats_min)} to {str(minutes)}")
+            try:
+                assert int(minutes) > 0
+                self.general_settings.reset_stats_min = int(minutes)
+            except Exception as e:
+                self.logger.exception(e)
+                self.logger.info(f"Sticking with an reset stats minutes of {self.general_settings.reset_stats_min}")
+

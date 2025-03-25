@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, Union, List
 
 from elements.display import Display
+from elements.locker import Locker
 from elements.predictors.base_predictor import PredictorBase
 from elements.settings.general_settings import GeneralSettings
 from elements.settings.model_settings import ModelSettings
@@ -19,7 +20,8 @@ class PredictorFactory(ABC):
                  websocket_server,
                  display: Optional[Display],
                  skip_frames: Optional[int],
-                 input_path: Optional[Union[str, List]]):
+                 input_path: Optional[Union[str, List]],
+                 locker: Locker):
         self.logger = Logger.setup_logger()
 
         self.general_settings = general_settings
@@ -29,6 +31,7 @@ class PredictorFactory(ABC):
         self.display = display
         self.skip_frames = skip_frames
         self.input_path = input_path
+        self.locker = locker
 
     @abstractmethod
     def get_predictor(self) -> PredictorBase:

@@ -9,7 +9,7 @@ class Display:
 
     def __init__(self, window_name: str = "data") -> None:
         self.window_name = window_name
-        cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
+        cv2.namedWindow(self.window_name, cv2.WND_PROP_FULLSCREEN)
         cv2.setWindowProperty(self.window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
     def show_image(self, image: np.ndarray) -> None:

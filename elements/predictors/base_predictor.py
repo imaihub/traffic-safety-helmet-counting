@@ -1,3 +1,4 @@
+import statistics
 import threading
 import time
 from abc import ABC, abstractmethod
@@ -9,6 +10,7 @@ import numpy as np
 import pybase64
 import torch
 
+from elements.benchmark_timer import BenchmarkTimer
 from elements.cycling_timer import CyclingTimer
 from elements.display import Display
 from elements.enums import ApplicationMode
@@ -24,7 +26,7 @@ from elements.settings.model_settings import ModelSettings
 from elements.settings.tracking_settings import TrackingSettings
 from elements.trackers.tracker_factory import TrackerFactory
 from elements.utils import Logger, get_color_map
-from elements.visualize import draw_progress_bar
+from elements.visualize import draw_progress_bar, draw_fps_text
 from gradio_server.websocket_manager.websocket_manager import WebSocketServer
 
 
@@ -38,7 +40,8 @@ class PredictorBase(ABC):
                  model_settings: ModelSettings,
                  tracking_settings: TrackingSettings,
                  predictor_parameters: PredictorParameters,
-                 websocket_server: WebSocketServer):
+                 websocket_server: WebSocketServer,
+                 locker: Locker):
         self.logger = Logger.setup_logger()
         self.websocket = websocket_server
 
@@ -47,13 +50,13 @@ class PredictorBase(ABC):
         self.tracking_settings = tracking_settings
 
         self.color_map = get_color_map(self.general_settings.classes)
-
+        self.last_times: list[float] = [0.0]
+        self.locker = locker
         self.aborting = None
         self.predictor_parameters = predictor_parameters
 
         if self.general_settings.reset_stats_min > 0:
-            self.cycling_timer_lock = threading.Lock()
-            self.cycling_timer = CyclingTimer(name="Reset stats timer", minutes=self.general_settings.reset_stats_min, fn=self.update_settings, lock=self.cycling_timer_lock)
+            self.cycling_timer = CyclingTimer(name="Reset stats timer", minutes=self.general_settings.reset_stats_min, fn=self.update_settings, locker=self.locker)
             self.t = threading.Thread(target=self.cycling_timer.start)
             self.t.start()
 
@@ -100,7 +103,8 @@ class PredictorBase(ABC):
         Resets the tracker
         """
         _, tracker_processor = TrackerFactory.create(general_settings=self.general_settings,
-                                                     tracking_settings=self.tracking_settings)
+                                                     tracking_settings=self.tracking_settings,
+                                                     model_settings=self.model_settings)
         self.predictor_parameters.tracker_processor = tracker_processor
 
         self.box_processor = self.initialize_box_processor()
@@ -114,6 +118,8 @@ class PredictorBase(ABC):
         Stops the analyzing, invoked by user interactions with the GUI
         """
         self.aborting = True
+        if self.general_settings.reset_stats_min > 0:
+            self.cycling_timer.stop()
 
     def wait_for_websocket(self) -> None:
         """
@@ -145,45 +151,57 @@ class PredictorBase(ABC):
         3. Visualizes the boxes on top of the original image
         4. Display the resulting image if a Display instance is passed
         """
-        visualization_image = deepcopy(image)
+        processing_timer = BenchmarkTimer("Process frame", print_time=False)
 
-        image = cv2.resize(src=image, dsize=(int(self.general_settings.input_width), int(self.general_settings.input_height)))
+        with processing_timer:
+            visualization_image = deepcopy(image)
 
-        predictions = self.predictor.predict(image=image)
-        boxes_numpy = self.box_processor.extract_boxes(predictions=predictions)
+            image = cv2.resize(src=image, dsize=(int(self.general_settings.input_width), int(self.general_settings.input_height)))
 
-        try:
-            active_boxes = self.predictor_parameters.tracker_processor.update_boxes(boxes=boxes_numpy, image=image)
-        except Exception as e:
-            self.logger.error(e)
-            active_boxes = []
+            predictions = self.predictor.predict(image=image)
+            boxes_numpy = self.box_processor.extract_boxes(predictions=predictions)
 
-        boxes_from_active_tracks = self.predictor_parameters.tracker_processor.get_boxes_from_active_tracks(active_tracks=active_boxes)
-        save_image = self.predictor_parameters.tracker_processor.update_tracks(active_tracks=boxes_from_active_tracks, verbose=False)
+            try:
+                active_boxes = self.predictor_parameters.tracker_processor.update_boxes(boxes=boxes_numpy, image=image)
+            except Exception as e:
+                self.logger.error(e)
+                active_boxes = []
 
-        visualization_image = cv2.resize(visualization_image, (self.general_settings.screen_width, self.general_settings.screen_height))
-        boxes_from_active_tracks = Resize.resize_boxes(boxes=boxes_from_active_tracks,
-                                                       dimension_from=(int(self.general_settings.input_width), int(self.general_settings.input_height)),
-                                                       dimension_to=(int(self.general_settings.screen_width), int(self.general_settings.screen_height)))
+            boxes_from_active_tracks = self.predictor_parameters.tracker_processor.get_boxes_from_active_tracks(active_tracks=active_boxes)
+            save_image = self.predictor_parameters.tracker_processor.update_tracks(active_tracks=boxes_from_active_tracks, verbose=False)
 
-        if boxes_from_active_tracks:
-            self.combine_boxes.set_boxes(boxes=boxes_from_active_tracks)
-            visualization_image = self.combine_boxes.apply(image=visualization_image)
+            visualization_image = cv2.resize(visualization_image, (self.general_settings.screen_width, self.general_settings.screen_height))
+            boxes_from_active_tracks = Resize.resize_boxes(boxes=boxes_from_active_tracks,
+                                                           dimension_from=(int(self.general_settings.input_width), int(self.general_settings.input_height)),
+                                                           dimension_to=(int(self.general_settings.screen_width), int(self.general_settings.screen_height)))
 
-        visualization_image = self.predictor_parameters.tracker_processor.update_count(image=visualization_image)
+            if boxes_from_active_tracks:
+                self.combine_boxes.set_boxes(boxes=boxes_from_active_tracks)
+                visualization_image = self.combine_boxes.apply(image=visualization_image)
 
-        if display is not None:
-            if self.general_settings.reset_stats_min > 0:
-                left, percentage = self.cycling_timer.get_time_left()
-                text = "Resetting statistics in:"
-                visualization_image = draw_progress_bar(image=visualization_image, text=f"{text} {str(left)}", percentage=percentage)
+            visualization_image = self.predictor_parameters.tracker_processor.update_count(image=visualization_image)
 
-            display.show_image(cv2.cvtColor(visualization_image, cv2.COLOR_BGR2RGB))
+            if len(self.last_times) > 3:
+                fps = 1 / (statistics.mean(self.last_times))
+                visualization_image = draw_fps_text(image=visualization_image, text=f"FPS: {round(fps, 1)}")
+
+            if display is not None:
+                if self.general_settings.reset_stats_min > 0:
+                    left, percentage = self.cycling_timer.get_time_left()
+                    text = "Resetting statistics in:"
+                    visualization_image = draw_progress_bar(image=visualization_image, text=f"{text} {str(left)}", percentage=percentage)
+
+                display.show_image(cv2.cvtColor(visualization_image, cv2.COLOR_BGR2RGB))
+
+        self.last_times.append(processing_timer.elapsed_real_time())
+        if len(self.last_times) > 10:
+            self.last_times = self.last_times[-10:]
+
         return visualization_image, save_image
 
     @torch.no_grad()
     @abstractmethod
-    def predict(self, locker: Locker) -> Optional[np.ndarray]:
+    def predict(self) -> Optional[np.ndarray]:
         """
         Abstract function for handling a camera feed and video input files for inference
         """

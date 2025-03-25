@@ -25,12 +25,14 @@ class GeneralSettings:
         self.reset_stats_min: float = 0.0
         self.input_width: int = 0
         self.input_height: int = 0
+
         self.screen_width: int = 1920
         self.screen_height: int = 1080
-        self.camera_width: int = 1920
-        self.camera_height: int = 1080
-        self.camera_index: int = 0
+
+        self.camera_index: int = -1
+
         self.save_all_frames: bool = False
+
         self.normalize_type: Optional[NormalizeType] = None
         self.advanced_view: bool = False
         self.realistic_processing: bool = True

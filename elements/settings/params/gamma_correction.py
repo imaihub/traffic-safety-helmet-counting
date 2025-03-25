@@ -26,5 +26,10 @@ class GammaCorrectionValueSetting(ParamSetting):
 
     def update(self, gamma_correction_value: float) -> None:
         with self.locker.lock:
-            self.logger.info(f"Changed gamma correction value from {str(self.general_settings.gamma_correction_value)} to {str(gamma_correction_value)}")
-            self.general_settings.gamma_correction_value = gamma_correction_value
+            self.logger.info(f"Changing gamma correction value from {str(self.general_settings.gamma_correction_value)} to {str(gamma_correction_value)}")
+            try:
+                assert int(gamma_correction_value) > 0
+                self.general_settings.gamma_correction_value = int(gamma_correction_value)
+            except Exception as e:
+                self.logger.exception(e)
+                self.logger.info(f"Sticking with an gamma correction value of {self.general_settings.gamma_correction_value}")

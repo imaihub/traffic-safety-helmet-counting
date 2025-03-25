@@ -6,6 +6,7 @@ import boxmot
 
 from elements.display import Display
 from elements.enums import InputMode
+from elements.locker import Locker
 from elements.predictors.camera import PredictorTrackerCamera
 from elements.predictors.parameters import PredictorParameters
 from elements.predictors.predictor_factory import PredictorFactory
@@ -25,14 +26,16 @@ class PredictTracking(PredictorFactory):
                  websocket_server=None,
                  display: Optional[Display] = None,
                  input_path: Optional[Union[str, list]] = None,
-                 skip_frames: Optional[int] = 0):
+                 skip_frames: Optional[int] = 0,
+                 locker: Locker = None):
         super().__init__(general_settings=general_settings,
                          model_settings=model_settings,
                          tracking_settings=tracking_settings,
                          websocket_server=websocket_server,
                          display=display,
                          skip_frames=skip_frames,
-                         input_path=input_path)
+                         input_path=input_path,
+                         locker=locker)
 
     def get_predictor(self):
         tracker_generator = None
@@ -40,7 +43,6 @@ class PredictTracking(PredictorFactory):
             tracker_generator = partial(boxmot.DeepOcSort,
                                         asso_func="centroid",
                                         half=True,
-                                        device=self.model_settings.device,
                                         reid_weights=Path("osnet_x1_0_msmt17.pt"),
                                         per_class=True)
         else:
@@ -50,7 +52,8 @@ class PredictTracking(PredictorFactory):
         self.tracking_settings.tracker_generator = tracker_generator
 
         _, tracker_processor = TrackerFactory.create(general_settings=self.general_settings,
-                                                                 tracking_settings=self.tracking_settings)
+                                                     tracking_settings=self.tracking_settings,
+                                                     model_settings=self.model_settings)
 
         self.tracking_settings.reset = False
 
@@ -66,12 +69,14 @@ class PredictTracking(PredictorFactory):
                 model_settings=self.model_settings,
                 tracking_settings=self.tracking_settings,
                 predictor_parameters=predictor_parameters,
-                websocket_server=self.websocket_server)
+                websocket_server=self.websocket_server,
+                locker=self.locker)
         else:
             predictor = PredictorTrackerInput(
                 general_settings=self.general_settings,
                 model_settings=self.model_settings,
                 tracking_settings=self.tracking_settings,
                 predictor_parameters=predictor_parameters,
-                websocket_server=self.websocket_server)
+                websocket_server=self.websocket_server,
+                locker=self.locker)
         return predictor, predictor_parameters

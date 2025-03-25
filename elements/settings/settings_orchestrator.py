@@ -3,7 +3,7 @@ from elements.settings.params.advanced_view import AdvancedViewSetting
 from elements.settings.params.architecture import ArchitectureSetting
 from elements.settings.params.box_threshold import BoxThresholdSetting
 from elements.settings.params.bpp import BPPSetting
-from elements.settings.params.camera import CameraDimensionSetting, CameraIndexSetting
+from elements.settings.params.camera import CameraIndexSetting
 from elements.settings.params.camera_mode import CameraModeSetting
 from elements.settings.params.classes import ClassesSetting
 from elements.settings.params.device import DeviceSetting
@@ -43,7 +43,6 @@ class SettingsOrchestrator:
         self.realistic_processing_setting = RealisticProcessingSetting(general_settings=model_manager.general_settings, locker=model_manager.locker)
         self.screen_dimension_setting = ScreenDimensionSetting(general_settings=model_manager.general_settings, locker=model_manager.locker)
 
-        self.camera_dimension_setting = CameraDimensionSetting(general_settings=model_manager.general_settings, locker=model_manager.locker)
         self.camera_index_setting = CameraIndexSetting(general_settings=model_manager.general_settings, locker=model_manager.locker)
         self.reset_stats_min = ResetStatsMinSetting(general_settings=model_manager.general_settings, locker=model_manager.locker)
         self.save_all_frames_setting = SaveAllFrames(general_settings=model_manager.general_settings, locker=model_manager.locker)

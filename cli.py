@@ -23,9 +23,7 @@ parser.add_argument('--template', type=str, default="bikehelmets")
 parser.add_argument('--input', type=str, default="output.mp4")
 parser.add_argument('--screen-width', type=int, default=1920)
 parser.add_argument('--screen-height', type=int, default=1080)
-parser.add_argument('--camera-width', type=int, default=1920)
-parser.add_argument('--camera-height', type=int, default=1080)
-parser.add_argument('--camera-index', type=int, default=0)
+parser.add_argument('--camera-index', type=int, default=-1)
 parser.add_argument('--save-all-frames', action="store_true")
 parser.add_argument('--reset-stats-min', type=float, default=0.0)
 
@@ -47,30 +45,30 @@ setting_orchestrator = SettingsOrchestrator(model_manager=model_manager)
 setting_orchestrator.device_setting.update(device="cuda:0" if args.gpu else "cpu")
 setting_orchestrator.realistic_processing_setting.update(realistic_processing=args.realistic)
 setting_orchestrator.screen_dimension_setting.update(width=args.screen_width, height=args.screen_height)
-setting_orchestrator.camera_dimension_setting.update(width=args.camera_width, height=args.camera_height)
 setting_orchestrator.camera_index_setting.update(index=args.camera_index)
 setting_orchestrator.save_all_frames_setting.update(save_all_frames=args.save_all_frames)
 setting_orchestrator.reset_stats_min.update(minutes=args.reset_stats_min)
 setting_orchestrator.initialize_values(config=config.current_config)
 
 general_settings.application_mode = ApplicationMode.CLI
-locker = Locker()
 display = Display()
-
+locker = Locker()
 if args.camera_mode:
     setting_orchestrator.camera_mode_setting.update(InputMode.CAMERA)
     predictor, predictor_parameters = PredictTracking(general_settings=general_settings,
                                                       model_settings=model_settings,
                                                       tracking_settings=tracking_settings,
-                                                      display=display).get_predictor()
+                                                      display=display,
+                                                      locker=locker).get_predictor()
 
-    predictor.predict(locker=locker)
+    predictor.predict()
 else:
     setting_orchestrator.camera_mode_setting.update(InputMode.FILE)
     predictor, predictor_parameters = PredictTracking(general_settings=general_settings,
                                                       model_settings=model_settings,
                                                       tracking_settings=tracking_settings,
                                                       display=display,
-                                                      input_path=full_input_path).get_predictor()
+                                                      input_path=full_input_path,
+                                                      locker=locker).get_predictor()
 
-    predictor.predict(locker=locker)
+    predictor.predict()

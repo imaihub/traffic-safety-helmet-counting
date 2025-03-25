@@ -11,7 +11,7 @@ yolov10:
   input_height: 736
 
   bpp: 8
-  box_threshold: 0.3
+  box_threshold: 0.6
 
   weights:
     yolov10_tracker.pt:
@@ -38,7 +38,7 @@ yolov11:
   input_height: 736
 
   bpp: 8
-  box_threshold: 0.3
+  box_threshold: 0.6
 
   weights:
     yolov11_tracker.pt:

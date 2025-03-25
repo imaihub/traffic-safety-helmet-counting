@@ -13,5 +13,11 @@ class InputHeightSetting(ParamSetting):
 
     def update(self, input_height: int) -> None:
         with self.locker.lock:
-            self.logger.info(f"Changed input height from {str(self.general_settings.input_height)} to {str(input_height)}")
-            self.general_settings.input_width = int(input_height)
+            self.logger.info(f"Changing input height from {str(self.general_settings.input_height)} to {str(input_height)}")
+            try:
+                assert int(input_height) > 0
+                self.general_settings.input_height = int(input_height)
+            except Exception as e:
+                self.logger.exception(e)
+                self.logger.info(f"Sticking with an input height of {self.general_settings.input_height}")
+

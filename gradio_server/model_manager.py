@@ -103,20 +103,25 @@ class ModelManager:
             return [gr.Button(value="Set to file mode", interactive=True),
                     gr.File(label="Input video", elem_id="video_in", visible=False),
                     gr.Button(value="Start camera analysis", visible=True),
-                    gr.Button(interactive=True, value="Reset tracker stats", visible=False)]
+                    gr.Button(interactive=True, value="Reset tracker stats", visible=False),
+                    gr.Checkbox(label="Save all frames", interactive=True, value=self.general_settings.save_all_frames, visible=self.general_settings.camera_mode==InputMode.CAMERA),
+                    gr.Dropdown(choices=["-1", "0", "1", "2", "3"], label="Camera index (-1 is automatic detection)", interactive=True, value=str(self.general_settings.camera_index), visible=self.general_settings.camera_mode == InputMode.CAMERA)]
 
         else:
             self.general_settings.camera_mode = InputMode.FILE
             return [gr.Button(value="Set to camera input mode", interactive=True),
                     gr.File(label="Input video", elem_id="video_in", visible=True),
                     gr.Button(value="Cancel processing", visible=False),
-                    gr.Button(interactive=True, value="Reset tracker stats", visible=False)]
+                    gr.Button(interactive=True, value="Reset tracker stats", visible=False),
+                    gr.Checkbox(label="Save all frames", interactive=True, value=self.general_settings.save_all_frames, visible=self.general_settings.camera_mode==InputMode.CAMERA),
+                    gr.Dropdown(choices=["-1", "0", "1", "2", "3"], label="Camera index (-1 is automatic detection)", interactive=True, value=str(self.general_settings.camera_index), visible=self.general_settings.camera_mode == InputMode.CAMERA)]
 
     def await_analysis(self) -> list[Union[gr.Component, None]]:
         self.analysis_thread.join()
         analysis_button = gr.Button(interactive=True, value="Start camera analysis", visible=False)
         reset_tracker_stats_button = gr.Button(interactive=True, value="Reset tracker stats", visible=False)
-        return [gr.update(value=None, interactive=True), analysis_button, reset_tracker_stats_button]
+        camera_button = gr.Button(value="Set to camera mode", interactive=True)
+        return [gr.update(value=None, interactive=True), analysis_button, reset_tracker_stats_button, camera_button]
 
     def reset_tracker(self):
         """
@@ -131,7 +136,8 @@ class ModelManager:
         self.analysis_thread = threading.Thread(target=self.predict, args=(input_path,))
         self.analysis_thread.start()
         return [gr.Button(interactive=True, value="Cancel processing", visible=True),
-                gr.Button(interactive=True, value="Reset tracker stats", visible=True)]
+                gr.Button(interactive=True, value="Reset tracker stats", visible=True),
+                gr.Button(value="Set to camera mode", interactive=False)]
 
     def check_model_settings(self):
         if not self.model_settings.architecture or not self.model_settings.weights_path:
@@ -160,14 +166,15 @@ class ModelManager:
                                                                         websocket_server=self.websocket_server,
                                                                         display=display,
                                                                         skip_frames=skip_frames,
-                                                                        input_path=input_path).get_predictor()
+                                                                        input_path=input_path,
+                                                                        locker=self.locker).get_predictor()
         else:
             logger.exception("Task types other than tracking are not supported")
             gr.Warning("Task types other than tracking are not supported")
             return None
 
         try:
-            result = self.predictor.predict(locker=self.locker)
+            result = self.predictor.predict()
 
         except Exception as e:
             if self.locker.lock.locked():

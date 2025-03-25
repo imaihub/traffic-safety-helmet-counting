@@ -1,8 +1,8 @@
-import threading
 import time
 from datetime import datetime, timedelta
 from typing import Callable
 
+from elements.locker import Locker
 from elements.utils import Logger
 
 
@@ -16,15 +16,15 @@ class CyclingTimer:
             name: str,
             minutes: float,
             fn: Callable,
-            lock: threading.Lock,
+            locker: Locker,
     ):
         self.logger = Logger.setup_logger()
 
-        self.finish: bool = False
+        self.finish = False
         self.name = name
         self.minutes = minutes
         self.fn = fn
-        self.lock = lock
+        self.locker = locker
         self.start_time: datetime | None = None
         self.end_time: datetime | None = None
 
@@ -38,11 +38,12 @@ class CyclingTimer:
             self.start_time = datetime.now()
             self.end_time = datetime.now() + timedelta(minutes=self.minutes)
 
-            while datetime.now() < self.end_time:
-                time.sleep(self.minutes)
+            while datetime.now() < self.end_time and not self.finish:
+                time.sleep(1)
 
-            with self.lock:
-                self.fn()
+            with self.locker.lock:
+                if not self.finish:
+                    self.fn()
 
     def stop(self):
         """

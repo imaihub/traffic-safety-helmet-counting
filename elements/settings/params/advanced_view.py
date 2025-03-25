@@ -42,14 +42,10 @@ class AdvancedViewSetting(ParamSetting):
 
             if self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold():
                 bit_box = gr.Dropdown(choices=["6", "8", "10", "12", "14", "16"], label="Bit", interactive=True, value=str(self.general_settings.bpp), visible=False)
-                width_input_box = gr.Text(label="Width input model", interactive=True, visible=False)
-                height_input_box = gr.Text(label="Height input model", interactive=True, visible=False)
-            else:
-                bit_box = gr.Dropdown(choices=["6", "8", "10", "12", "14", "16"], label="Bit", interactive=True, value=str(self.general_settings.bpp), visible=advanced_view)
-                width_input_box = gr.Text(label="Width input model", interactive=True, visible=advanced_view)
-                height_input_box = gr.Text(label="Height input model", interactive=True, visible=advanced_view)
+                width_input_box = gr.Text(label="Width input model", value=self.general_settings.input_width, interactive=True, visible=advanced_view)
+                height_input_box = gr.Text(label="Height input model", value=self.general_settings.input_height, interactive=True, visible=advanced_view)
 
-            realistic_processing_box = gr.Checkbox(label="Realistic Processing", interactive=True, value=self.general_settings.realistic_processing,
+            realistic_processing_box = gr.Checkbox(label="Slow down processing", interactive=True, value=self.general_settings.realistic_processing,
                                                    visible=True if self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold()
                                                                    and self.general_settings.camera_mode == InputMode.FILE else False)
             box_threshold_box = gr.Text(label="Box threshold", interactive=True, value=str(self.general_settings.box_threshold), visible=True)
@@ -57,7 +53,7 @@ class AdvancedViewSetting(ParamSetting):
             gamma_correction_value_box = gr.Text(label="Gamma value", interactive=True, value=str(self.general_settings.gamma_correction_value), visible=advanced_view and not self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold())
 
             tracker_option_1 = gr.Text(label="Detection threshold", value=str(self.tracking_settings.param_options.get(
-                self.tracking_settings.current_options[0], "-")), interactive=True, visible=advanced_view and self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold() is not None and not self.tracking_settings.current_options[1] == "")
+                self.tracking_settings.current_options[0], "-")), interactive=True, visible=False) # Redundant as there is already a box threshold setting
             tracker_option_2 = gr.Text(label="Minimum hits", value=str(self.tracking_settings.param_options.get(
                 self.tracking_settings.current_options[1], "-")), interactive=True, visible=advanced_view and self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold() is not None and not self.tracking_settings.current_options[1] == "")
             tracker_option_3 = gr.Text(label="Maximum age", value=str(self.tracking_settings.param_options.get(
