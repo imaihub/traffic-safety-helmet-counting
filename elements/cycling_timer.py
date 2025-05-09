@@ -62,4 +62,4 @@ class CyclingTimer:
         Calculates the time left in seconds and returns that amount including the percentage of progress.
         """
         elapsed_seconds = (datetime.now() - self.start_time).total_seconds()
-        return round((self.minutes * 60) - elapsed_seconds, 1), 100 - (elapsed_seconds / (self.minutes * 60) * 100)
+        return round((self.minutes * 60) - elapsed_seconds), 100 - (elapsed_seconds / (self.minutes * 60) * 100)

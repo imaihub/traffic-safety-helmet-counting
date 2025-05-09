@@ -81,7 +81,7 @@ class PredictorTrackerInput(PredictorBase):
 
                                 self.set_response(image=show_image)
                         except Exception as e:
-                            traceback.print_exc()
+                            self.logger.error(traceback.format_exc())
                             self.logger.error(e)
                             if self.locker.lock.locked():
                                 self.locker.lock.release()

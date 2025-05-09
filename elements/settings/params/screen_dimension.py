@@ -1,3 +1,5 @@
+import traceback
+
 from elements.locker import Locker
 from elements.settings.general_settings import GeneralSettings
 from elements.settings.params.param_settings import ParamSetting
@@ -21,5 +23,6 @@ class ScreenDimensionSetting(ParamSetting):
                 self.general_settings.screen_width = width
                 self.general_settings.screen_height = height
             except Exception as e:
+                self.logger.error(traceback.format_exc())
                 self.logger.exception(e)
                 self.logger.info(f"Sticking with an input width of {self.general_settings.input_width} and an input height of {self.general_settings.input_height}")

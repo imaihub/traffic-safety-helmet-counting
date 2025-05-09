@@ -1,3 +1,5 @@
+import traceback
+
 from elements.locker import Locker
 from elements.settings.general_settings import GeneralSettings
 from elements.settings.params.param_settings import ParamSetting
@@ -18,5 +20,6 @@ class InputWidthSetting(ParamSetting):
                 assert int(input_width) > 0
                 self.general_settings.input_width = int(input_width)
             except Exception as e:
+                self.logger.error(traceback.format_exc())
                 self.logger.exception(e)
                 self.logger.info(f"Sticking with an input width of {self.general_settings.input_width}")

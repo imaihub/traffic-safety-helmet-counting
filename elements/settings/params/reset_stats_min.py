@@ -1,3 +1,5 @@
+import traceback
+
 from elements.locker import Locker
 from elements.settings.general_settings import GeneralSettings
 from elements.settings.params.param_settings import ParamSetting
@@ -19,6 +21,7 @@ class ResetStatsMinSetting(ParamSetting):
                 assert int(minutes) > 0
                 self.general_settings.reset_stats_min = int(minutes)
             except Exception as e:
+                self.logger.error(traceback.format_exc())
                 self.logger.exception(e)
                 self.logger.info(f"Sticking with an reset stats minutes of {self.general_settings.reset_stats_min}")
 

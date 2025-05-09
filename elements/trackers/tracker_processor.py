@@ -56,7 +56,7 @@ class TrackerProcessor(ABC):
 
         return active_tracks
 
-    def update_count(self, image: np.ndarray) -> np.ndarray:
+    def update_count(self, image: np.ndarray, background_fill: bool = False) -> np.ndarray:
         """
         Pastes the classes and counts on the image with dynamic font size and thickness.
         """
@@ -75,6 +75,24 @@ class TrackerProcessor(ABC):
         text = self.get_formatted_count()
         img = deepcopy(image)
         y = int(image_height / 1.05)  # Start Y position for text placement
+
+        max_size = -1
+
+        for t in text.split("\n"):
+            class_name = t.split(":")[0]
+            if class_name == "":
+                continue
+
+            size = cv2.getTextSize(t, cv2.FONT_HERSHEY_SIMPLEX, fontscale, thickness)
+            if size[0][0] > max_size:
+                max_size = size[0][0]
+
+        if background_fill:
+            x1 = int(image_width / 1.3) - 50
+            x2 = x1 + max_size + 100
+            y2 = int(image_height / 1.05) + 50
+            y1 = y2 - ((len(text.split("\n")) + 2) * 50)
+            cv2.rectangle(img, (x1, y1), (x2, y2), (0, 0, 0), -1)
 
         for t in text.split("\n"):
             class_name = t.split(":")[0]

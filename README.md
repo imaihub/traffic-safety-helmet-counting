@@ -35,7 +35,9 @@ cd traffic-safety-helmet-counting
 Once Conda  is installed (from https://www.anaconda.com/download), you can create a new environment specifically for running these demos. We'll use Python 3.12 for this environment.
 Open your terminal (Command Prompt on Windows, Terminal on Linux), and run the following command:
 
-``conda create -n bikehelmets python=3.12``
+```bash
+conda create -n bikehelmets python=3.12
+```
 
 ## Activating the Environment
 
@@ -48,7 +50,9 @@ Activate the newly created environment using the command:
 With the environment activated, you'll need to install the necessary Python packages. These are listed in a requirements.txt file provided in the repository. 
 Ensure you're in the repository's root directory in your terminal, then run:
 
-``pip install -r requirements.txt``
+```bash
+pip install -r requirements.txt
+```
 
 If you are on Windows and wish to use the GPU for the processing, you have to install torch using the following instructions from https://pytorch.org/get-started/locally/
 
@@ -66,7 +70,9 @@ Running the Gradio Demo
 
 Navigate to the Gradio directory in your terminal, and run the demo script:
 
-``python gradio_server/server.py``
+```bash
+python gradio_server/server.py
+```
 
 ```markdown
 ## Running the Gradio Demo
@@ -87,15 +93,27 @@ This code also supports analyses through a CLI script.
 
 Run the CLI script with 
 
-``python cli.py``
+```bash
+python cli.py
+```
 
 If you want a local camera feed, add the argument --camera-mode like:
 
-``python cli.py --camera-mode``
+```bash
+python cli.py --camera-mode
+```
+
+Note: If it does not work on Linux, make sure to install v4l-utils with
+
+```bash
+sudo apt install v4l-utils
+```
 
 If you want an analysis of a video file, add an --input argument pointing to the video file like:
 
-``python cli.py --input /path/to/video.mp4``
+```bash
+python cli.py --input /path/to/video.mp4
+```
 
 Below is a list of the relevant arguments. Some arguments are flags, others need a value, specified by the italic value after the argument.
 

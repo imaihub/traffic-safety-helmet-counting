@@ -4,6 +4,7 @@ import time
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import Optional
+import traceback
 
 import cv2
 import numpy as np
@@ -164,6 +165,7 @@ class PredictorBase(ABC):
             try:
                 active_boxes = self.predictor_parameters.tracker_processor.update_boxes(boxes=boxes_numpy, image=image)
             except Exception as e:
+                self.logger.error(traceback.format_exc())
                 self.logger.error(e)
                 active_boxes = []
 
@@ -179,7 +181,7 @@ class PredictorBase(ABC):
                 self.combine_boxes.set_boxes(boxes=boxes_from_active_tracks)
                 visualization_image = self.combine_boxes.apply(image=visualization_image)
 
-            visualization_image = self.predictor_parameters.tracker_processor.update_count(image=visualization_image)
+            visualization_image = self.predictor_parameters.tracker_processor.update_count(image=visualization_image, background_fill=True)
 
             if len(self.last_times) > 3:
                 fps = 1 / (statistics.mean(self.last_times))

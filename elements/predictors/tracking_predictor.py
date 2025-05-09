@@ -42,7 +42,7 @@ class PredictTracking(PredictorFactory):
         if self.tracking_settings.tracker.casefold() == "deepocsort":
             tracker_generator = partial(boxmot.DeepOcSort,
                                         asso_func="centroid",
-                                        half=True,
+                                        half=False,
                                         reid_weights=Path("osnet_x1_0_msmt17.pt"),
                                         per_class=True)
         else:
