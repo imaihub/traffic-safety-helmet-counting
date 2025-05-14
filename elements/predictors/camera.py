@@ -67,8 +67,10 @@ class PredictorTrackerCamera(PredictorBase):
                             show_image, save_image = self.process_frame(image=image, display=self.predictor_parameters.display)
                             self.locker.lock.release()
 
-                            self.result_saver.append_image_to_video(image=show_image)
-                            if save_image:
+                            if self.general_settings.save_results:
+                                self.result_saver.append_image_to_video(image=show_image)
+
+                            if self.general_settings.save_new_objects and save_image:
                                 self.result_saver.save_image(image=show_image)
 
                             self.set_response(image=show_image)

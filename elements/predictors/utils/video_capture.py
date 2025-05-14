@@ -51,7 +51,7 @@ def get_webcam_settings(camera_index: int = -1, verbose: bool = False) -> cv2.Vi
 
     if camera_index < 0:
         # Determine usable camera index first
-        for i in range(4):
+        for i in reversed(range(4)):
             cap = cv2.VideoCapture(i)
 
             ok, frame = cap.read()

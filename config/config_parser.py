@@ -1,6 +1,7 @@
 import glob
 import os
 import sys
+import traceback
 from typing import Optional
 
 import yaml
@@ -8,14 +9,12 @@ import yaml
 from elements.model import ModelConfig
 from elements.utils import Logger
 
-logger = Logger.setup_logger()
-
-
 class ConfigParser:
     """
     Holds the logic to parse the config.yaml file consisting the settings for each model
     """
     def __init__(self, template: Optional[str] = None):
+        self.logger = Logger.setup_logger()
         self.base_path = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
         self.config_path = os.path.join(self.base_path, 'config.yaml')
         self.weight_extensions = ["ckpt", "pth", "pt"]
@@ -46,7 +45,8 @@ class ConfigParser:
 
 
         except Exception as e:
-            logger.exception(f"Failed to initialize ConfigParser: {e}")
+            self.logger.error(traceback.format_exc())
+            self.logger.exception(f"Failed to initialize ConfigParser: {e}")
 
     def update_current_config(self, architecture: str, weights: str) -> None:
         """
@@ -65,7 +65,8 @@ class ConfigParser:
                 self.trackers.append(tracker)
 
         except Exception as e:
-            logger.exception(f"Failed to initialize ConfigParser: {e}")
+            self.logger.error(traceback.format_exc())
+            self.logger.exception(f"Failed to initialize ConfigParser: {e}")
 
     def _process_weight_file(self, weight_file: str, config_file: dict) -> Optional[ModelConfig]:
         """
@@ -78,7 +79,7 @@ class ConfigParser:
         weights = os.path.basename(weight_file)
 
         if architecture not in config_file:
-            logger.warning(f"Model {architecture} not found in the config file.")
+            self.logger.warning(f"Model {architecture} not found in the config file.")
             return None
 
         model_config_data = config_file.get(architecture, {})
@@ -124,10 +125,10 @@ class ConfigParser:
                     config.tracker = tracker
                     return config
 
-            logger.warning(f"Template '{self.template}' not found in configurations.")
+            raise RuntimeError(f"Template '{self.template}' not found in configurations.")
         except Exception as e:
-            logger.exception(f"Error retrieving current config for template '{self.template}': {e}")
-        return None
+            self.logger.error(traceback.format_exc())
+            raise RuntimeError(f"Error retrieving current config for template '{self.template}': {e}")
 
     def get_all_configs(self) -> list[ModelConfig]:
         return self.all_configs
@@ -143,10 +144,12 @@ class ConfigParser:
             with open(self.config_path, "r") as file:
                 return yaml.safe_load(file)
         except FileNotFoundError:
-            logger.error(f"Config file not found: {self.config_path}")
+            self.logger.error(traceback.format_exc())
+            self.logger.error(f"Config file not found: {self.config_path}")
             raise
         except yaml.YAMLError as e:
-            logger.error(f"Error parsing YAML file: {e}")
+            self.logger.error(traceback.format_exc())
+            self.logger.error(f"Error parsing YAML file: {e}")
             raise
 
     def _add_to_list_in_dict(self, dictionary: dict, key: str, value: ModelConfig) -> None:
