@@ -32,6 +32,8 @@ class GeneralSettings:
         self.camera_index: int = -1
 
         self.save_all_frames: bool = False
+        self.save_results: bool = False
+        self.save_new_objects: bool = False
 
         self.normalize_type: Optional[NormalizeType] = None
         self.advanced_view: bool = False

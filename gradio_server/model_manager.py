@@ -104,7 +104,7 @@ class ModelManager:
                     gr.File(label="Input video", elem_id="video_in", visible=False),
                     gr.Button(value="Start camera analysis", visible=True),
                     gr.Button(interactive=True, value="Reset tracker stats", visible=False),
-                    gr.Checkbox(label="Save all frames", interactive=True, value=self.general_settings.save_all_frames, visible=self.general_settings.camera_mode==InputMode.CAMERA),
+                    gr.Checkbox(label="Save raw frames as .png files", interactive=True, value=self.general_settings.save_all_frames, visible=self.general_settings.camera_mode==InputMode.CAMERA),
                     gr.Dropdown(choices=["-1", "0", "1", "2", "3"], label="Camera index (-1 is automatic detection)", interactive=True, value=str(self.general_settings.camera_index), visible=self.general_settings.camera_mode == InputMode.CAMERA)]
 
         else:
@@ -113,7 +113,7 @@ class ModelManager:
                     gr.File(label="Input video", elem_id="video_in", visible=True),
                     gr.Button(value="Cancel processing", visible=False),
                     gr.Button(interactive=True, value="Reset tracker stats", visible=False),
-                    gr.Checkbox(label="Save all frames", interactive=True, value=self.general_settings.save_all_frames, visible=self.general_settings.camera_mode==InputMode.CAMERA),
+                    gr.Checkbox(label="Save raw frames as .png files", interactive=True, value=self.general_settings.save_all_frames, visible=self.general_settings.camera_mode==InputMode.CAMERA),
                     gr.Dropdown(choices=["-1", "0", "1", "2", "3"], label="Camera index (-1 is automatic detection)", interactive=True, value=str(self.general_settings.camera_index), visible=self.general_settings.camera_mode == InputMode.CAMERA)]
 
     def await_analysis(self) -> list[Union[gr.Component, None]]:

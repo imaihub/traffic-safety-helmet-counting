@@ -15,6 +15,8 @@ from elements.settings.params.output_folder import OutputFolderSetting
 from elements.settings.params.realistic_processing import RealisticProcessingSetting
 from elements.settings.params.reset_stats_min import ResetStatsMinSetting
 from elements.settings.params.save_frames import SaveAllFrames
+from elements.settings.params.save_new_objects import SaveNewObjects
+from elements.settings.params.save_results import SaveResults
 from elements.settings.params.screen_dimension import ScreenDimensionSetting
 from elements.settings.params.task_type import TaskTypeSetting
 from elements.settings.params.tracked_classes import TrackedClassesSetting
@@ -45,7 +47,10 @@ class SettingsOrchestrator:
 
         self.camera_index_setting = CameraIndexSetting(general_settings=model_manager.general_settings, locker=model_manager.locker)
         self.reset_stats_min = ResetStatsMinSetting(general_settings=model_manager.general_settings, locker=model_manager.locker)
+
         self.save_all_frames_setting = SaveAllFrames(general_settings=model_manager.general_settings, locker=model_manager.locker)
+        self.save_results_setting = SaveResults(general_settings=model_manager.general_settings, locker=model_manager.locker)
+        self.save_new_objects_setting = SaveNewObjects(general_settings=model_manager.general_settings, locker=model_manager.locker)
 
         self.box_threshold_setting = BoxThresholdSetting(general_settings=model_manager.general_settings, locker=model_manager.locker)
 

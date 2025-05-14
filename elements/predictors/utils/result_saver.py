@@ -67,6 +67,7 @@ class ResultSaver:
             self.logger.exception("No VideoWriter instance initiated yet, use initiate_result_video first.")
             return
 
+        self.logger.info("Appending image to video")
         self.out_video.write(cv2.resize(image, self.frame_size))
 
     def save_copy_video(self) -> str:

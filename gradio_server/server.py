@@ -68,8 +68,14 @@ if Tasks.TRACKING.name.casefold() in args.type.casefold():
                     realistic_processing_box = gr.Checkbox(label="Slow down processing", interactive=True, value=general_settings.realistic_processing, visible=True)
                     realistic_processing_box.change(setting_orchestrator.realistic_processing_setting.update, inputs=realistic_processing_box)
 
-                    save_all_frames_box = gr.Checkbox(label="Save all frames", interactive=True, value=general_settings.save_all_frames, visible=general_settings.camera_mode==InputMode.CAMERA)
+                    save_all_frames_box = gr.Checkbox(label="Save raw frames as .png files", interactive=True, value=general_settings.save_all_frames, visible=general_settings.camera_mode==InputMode.CAMERA)
                     save_all_frames_box.change(setting_orchestrator.save_all_frames_setting.update, inputs=save_all_frames_box)
+
+                    save_results_box = gr.Checkbox(label="Construct an .mp4 file with processed frames", interactive=True, value=general_settings.save_results)
+                    save_results_box.change(setting_orchestrator.save_results_setting.update, inputs=save_results_box)
+
+                    save_new_objects_box = gr.Checkbox(label="Save frames with new cyclists/helmets as .png files", interactive=True, value=general_settings.save_new_objects)
+                    save_new_objects_box.change(setting_orchestrator.save_new_objects_setting.update, inputs=save_new_objects_box)
 
                     gamma_correction_bool_box = gr.Checkbox(label="Gamma correction", interactive=True, value=general_settings.gamma_correction_bool, visible=False)
                     gamma_correction_value_box = gr.Text(label="Gamma value", interactive=True, value=str(general_settings.gamma_correction_value), visible=False)

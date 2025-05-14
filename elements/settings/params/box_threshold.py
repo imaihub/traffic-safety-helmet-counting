@@ -13,9 +13,10 @@ class BoxThresholdSetting(ParamSetting):
 
     def update(self, box_threshold: float) -> None:
         with self.locker.lock:
-            self.logger.info(f"Changed box_threshold value from {str(self.general_settings.box_threshold)} to {str(box_threshold)}")
             try:
-                assert 0.0 < float(box_threshold) < 1.0
+                if not 0.0 < float(box_threshold) < 1.0: # Skip update
+                    return
+                self.logger.info(f"Changed box_threshold value from {str(self.general_settings.box_threshold)} to {str(box_threshold)}")
                 self.general_settings.box_threshold = float(box_threshold)
             except Exception as e:
                 self.logger.exception(e)

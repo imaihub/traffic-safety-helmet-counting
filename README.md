@@ -118,19 +118,21 @@ python cli.py --input /path/to/video.mp4
 Below is a list of the relevant arguments. Some arguments are flags, others need a value, specified by the italic value after the argument.
 
 General:
-- --realistic: slows down processing in case of it being too fast to view
-- --gpu: use gpu for processing, else cpu
-- --screen-width *value*: output width, standard 1920
-- --screen-height *value*: output height, standard 1080
+- --realistic: Help ease down the processing speed to make the resulting video seem realistic, in case of very good hardware
+- --gpu: Use GPU for processing, else the CPU is used
+- --screen-width: Screen width in pixels for visualization, standard 1920
+- --screen-height: Screen height in pixels for visualization, standard 1080
 
 Camera:
-- --camera-mode: select camera mode
-- --camera-index: index of camera to use
-- --save-all-frames: saves all frames from camera
-- --reset-stats-min *value*: interval of minutes to reset the count of the classes (standard 0, disabled)
+- --camera-mode: Use USB webcam/camera as input
+- --camera-index: Index of camera to use, -1 is automatic discovery"
+- --save-all-frames: Save all raw frames from camera as separate .png files
+- --save-results: Construct an .mp4 file with all processed images
+- --save-new-objects: Save all frames with new objects as .png files"
+- --reset-stats-min: Automatically reset counts every x minutes
 
 File input:
-- --input *value*: path to video file
+- --input: Use video file as input, looks in dataset folder only. So first copy file there and put the file name as an argument
 
 
 
