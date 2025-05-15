@@ -13,9 +13,8 @@ from elements.utils import Logger, get_color_map
 
 class TrackerProcessor(ABC):
     """
-    Custom Tracker classes acting as an interface to the BoxMot tracker objects. Includes methods regarding updating and showing count info
+    Custom Tracker classes acting as an interface to the BoxMot tracker objects.
     """
-
     def __init__(self, general_settings: GeneralSettings, min_hits: int, tracker: BaseTracker):
         self.count = 0
         self.min_hits = min_hits
@@ -28,7 +27,7 @@ class TrackerProcessor(ABC):
 
     def reset_count(self) -> None:
         """
-        Resets the count of the tracker
+        Resets the count of the tracker.
         """
         self.logger.info("Resetting tracker count")
         self.count = 0
@@ -37,13 +36,13 @@ class TrackerProcessor(ABC):
     @abstractmethod
     def update_tracks(self, active_tracks: list, verbose: bool = True) -> bool:
         """
-        updates info on the tracks, including whether this track has already passed the line where it increments the count of a class
+        Updates info on the tracks, including whether this track has already passed the line where it increments the count of a class.
         """
         pass
 
     def update_boxes(self, boxes: list, image: np.ndarray) -> list[np.ndarray]:
         """
-        Passes the detections to the BoxMot tracker object so it can look whether they belong to an existing track of a new one
+        Passes the detections to the BoxMot tracker object so it can look whether they belong to an existing track of a new one.
         """
         tracker_tracks: list = sum(self.tracker.per_class_active_tracks.values(), [])
         new_potential_active_tracks = self.tracker.update(np.asarray(boxes), image)
@@ -114,7 +113,7 @@ class TrackerProcessor(ABC):
 
     def get_formatted_count(self) -> str:
         """
-        Formats the class and counts in a string to show on the image
+        Formats the class and counts in a string to show on the image.
         """
         text = ""
         for c in self.counts.keys():
@@ -124,7 +123,7 @@ class TrackerProcessor(ABC):
 
     def get_boxes_from_active_tracks(self, active_tracks: list) -> list[BoundingBox]:
         """
-        Returns a list of bounding boxes created from info inside active_tracks, a list of
+        Returns a list of bounding boxes created from info inside active_tracks, a list of.
         """
         bboxes = []
         for track in active_tracks:

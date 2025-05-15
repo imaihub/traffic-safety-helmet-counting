@@ -5,9 +5,8 @@ from elements.settings.params.param_settings import ParamSetting
 
 class SaveResults(ParamSetting):
     """
-    Change the save result setting. If on, every processed frame.
+    Change the save result setting.
     """
-
     def __init__(self, general_settings: GeneralSettings, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings

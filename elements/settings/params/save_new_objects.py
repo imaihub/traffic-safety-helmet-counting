@@ -5,9 +5,11 @@ from elements.settings.params.param_settings import ParamSetting
 
 class SaveNewObjects(ParamSetting):
     """
-    Change the save new objects result setting. If on, saves a .png of the processed image if it contains new objects
-    """
+    Change the save new objects result setting.
 
+    If on, saves a .png of the processed image if it contains new objects
+
+    """
     def __init__(self, general_settings: GeneralSettings, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings

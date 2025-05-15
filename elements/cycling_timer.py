@@ -8,15 +8,17 @@ from elements.utils import Logger
 
 class CyclingTimer:
     """
-    This class provides functionality to keep track of a long timer and execute some code after that time has elapsed. Automatically resets.
-    """
+    This class provides functionality to keep track of a long timer and execute some code after that time has elapsed.
 
+    Automatically resets.
+
+    """
     def __init__(
-            self,
-            name: str,
-            minutes: float,
-            fn: Callable,
-            locker: Locker,
+        self,
+        name: str,
+        minutes: float,
+        fn: Callable,
+        locker: Locker,
     ):
         self.logger = Logger.setup_logger()
 
@@ -30,7 +32,7 @@ class CyclingTimer:
 
     def start(self) -> None:
         """
-        Start the timer
+        Start the timer.
         """
         self.logger.info(f"Starting {self.name} timer to reset every {self.minutes} minutes")
 
@@ -47,13 +49,13 @@ class CyclingTimer:
 
     def stop(self):
         """
-        Stop the timer by setting the finish flag
+        Stop the timer by setting the finish flag.
         """
         self.finish = True
 
     def reset(self) -> None:
         """
-        Resets the timer
+        Resets the timer.
         """
         self.start()
 

@@ -6,9 +6,8 @@ from elements.settings.params.param_settings import ParamSetting
 
 class CameraModeSetting(ParamSetting):
     """
-    Sets the mode of this application. Called on startup and no way for the user to change it while running the webserver
+    Sets the mode of this application.
     """
-
     def __init__(self, general_settings: GeneralSettings, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings

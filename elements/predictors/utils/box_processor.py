@@ -5,9 +5,8 @@ from elements.settings.general_settings import GeneralSettings
 
 class BoxProcessor:
     """
-    A BoxProcessor instance is responsible for taking in (postprocessed) predictions of a YOLO model and constructing a readable numpy array from it
+    A BoxProcessor instance is responsible for taking in (postprocessed) predictions of a YOLO model and constructing a readable numpy array from it.
     """
-
     def __init__(self, general_settings: GeneralSettings):
         self.general_settings = general_settings
 

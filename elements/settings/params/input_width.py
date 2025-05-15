@@ -7,7 +7,7 @@ from elements.settings.params.param_settings import ParamSetting
 
 class InputWidthSetting(ParamSetting):
     """
-    Changes the input width value which gets used in the preprocessing step. Can cause issues with inference. Can be changed in the GUI
+    Changes the input width value which gets used in the preprocessing step.
     """
     def __init__(self, general_settings: GeneralSettings, locker: Locker):
         super().__init__(locker)

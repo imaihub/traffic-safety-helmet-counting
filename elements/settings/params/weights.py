@@ -13,9 +13,8 @@ from elements.settings.params.param_settings import ParamSetting
 
 class WeightsSetting(ParamSetting):
     """
-    Changes the weights used for inference. Can be chosen in the GUI
+    Changes the weights used for inference.
     """
-
     def __init__(self, general_settings: GeneralSettings, model_settings: ModelSettings, config_parser: ConfigParser, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings
@@ -26,10 +25,11 @@ class WeightsSetting(ParamSetting):
         """
         This function loads in the weights to a model. It dynamically searches int the folders with the name of the architecture and looks of the weights_file which is the name of the weights file.
 
-        :param weights_path: the name of the weights file
+        :param weights_path: The name of the weights file
+
         """
         with self.locker.lock if not (self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold() and self.general_settings.camera_mode == InputMode.CAMERA) else contextlib.nullcontext():
-            self.config_parser.update_current_config(architecture = self.model_settings.architecture, weights=weights_path)
+            self.config_parser.update_current_config(architecture=self.model_settings.architecture, weights=weights_path)
 
             self.logger.info(f"Changed weights from {str(self.model_settings.weights_path)} to {str(weights_path)}")
             if weights_path is not self.model_settings.weights_path and weights_path:

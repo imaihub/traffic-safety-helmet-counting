@@ -23,7 +23,10 @@ logger = Logger().setup_logger()
 
 class ModelManager:
     """
-    The middle man in this application. Holds objects required to predict, can abort tasks, reset the tracker stats and holds the logic to start he websocket server
+    The middle man in this application.
+
+    Holds objects required to predict, can abort tasks, reset the tracker stats and holds the logic to start he websocket server
+
     """
 
     general_settings: GeneralSettings
@@ -48,10 +51,9 @@ class ModelManager:
 
         self.images_boxes: list = []
 
-    def initialize_settings(self, model_settings: ModelSettings, general_settings: GeneralSettings,
-                            tracking_settings: TrackingSettings) -> None:
+    def initialize_settings(self, model_settings: ModelSettings, general_settings: GeneralSettings, tracking_settings: TrackingSettings) -> None:
         """
-        Simply sets the setting objects to the passed ones
+        Simply sets the setting objects to the passed ones.
         """
         self.tracking_settings = tracking_settings
         self.general_settings = general_settings
@@ -59,13 +61,13 @@ class ModelManager:
 
     def get_parsed_config(self) -> ConfigParser:
         """
-        Getter for the object holding the config info
+        Getter for the object holding the config info.
         """
         return self.config_parser
 
     def start_websocket_server(self):
         """
-        If the task type is tracking, start the websocket server
+        If the task type is tracking, start the websocket server.
         """
         if self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold():
             self.websocket_server = WebSocketServer()
@@ -73,7 +75,10 @@ class ModelManager:
 
     def toggle_analysis(self) -> list[gr.Button]:
         """
-        Start and turn off the camera feed analysis. Saves resulting video on quitting. Can also cancel current video analyses
+        Start and turn off the camera feed analysis.
+
+        Saves resulting video on quitting. Can also cancel current video analyses
+
         """
         self.reset_tracker()
 
@@ -81,40 +86,41 @@ class ModelManager:
             if self.analyzing:
                 self.analyzing = False
                 self.predictor.abort()
-                return [gr.Button(interactive=True, value="Start camera analysis"),
-                        gr.Button(interactive=True, value="Reset tracker stats", visible=False)]
+                return [gr.Button(interactive=True, value="Start camera analysis"), gr.Button(interactive=True, value="Reset tracker stats", visible=False)]
             else:
                 self.analyzing = True
-                self.analysis_thread = threading.Thread(target=self.predict, args=(None,))
+                self.analysis_thread = threading.Thread(target=self.predict, args=(None, ))
                 self.analysis_thread.start()
-                return [gr.Button(interactive=True, value="Stop camera analysis"),
-                        gr.Button(interactive=True, value="Reset tracker stats", visible=True)]
+                return [gr.Button(interactive=True, value="Stop camera analysis"), gr.Button(interactive=True, value="Reset tracker stats", visible=True)]
         else:
             self.predictor.abort()
-            return [gr.Button(interactive=True, value="Cancel processing"),
-                    gr.Button(interactive=True, value="Reset tracker stats", visible=True)]
+            return [gr.Button(interactive=True, value="Cancel processing"), gr.Button(interactive=True, value="Reset tracker stats", visible=True)]
 
     def switch_camera_mode(self) -> list[gr.Component]:
         """
-        Changes the mode of the application, updates GUI accordingly
+        Changes the mode of the application, updates GUI accordingly.
         """
         if self.general_settings.camera_mode == InputMode.FILE:
             self.general_settings.camera_mode = InputMode.CAMERA
-            return [gr.Button(value="Set to file mode", interactive=True),
-                    gr.File(label="Input video", elem_id="video_in", visible=False),
-                    gr.Button(value="Start camera analysis", visible=True),
-                    gr.Button(interactive=True, value="Reset tracker stats", visible=False),
-                    gr.Checkbox(label="Save raw frames as .png files", interactive=True, value=self.general_settings.save_all_frames, visible=self.general_settings.camera_mode==InputMode.CAMERA),
-                    gr.Dropdown(choices=["-1", "0", "1", "2", "3"], label="Camera index (-1 is automatic detection)", interactive=True, value=str(self.general_settings.camera_index), visible=self.general_settings.camera_mode == InputMode.CAMERA)]
+            return [
+                gr.Button(value="Set to file mode", interactive=True),
+                gr.File(label="Input video", elem_id="video_in", visible=False),
+                gr.Button(value="Start camera analysis", visible=True),
+                gr.Button(interactive=True, value="Reset tracker stats", visible=False),
+                gr.Checkbox(label="Save raw frames as .png files", interactive=True, value=self.general_settings.save_all_frames, visible=self.general_settings.camera_mode == InputMode.CAMERA),
+                gr.Dropdown(choices=["-1", "0", "1", "2", "3"], label="Camera index (-1 is automatic detection)", interactive=True, value=str(self.general_settings.camera_index), visible=self.general_settings.camera_mode == InputMode.CAMERA)
+            ]
 
         else:
             self.general_settings.camera_mode = InputMode.FILE
-            return [gr.Button(value="Set to camera input mode", interactive=True),
-                    gr.File(label="Input video", elem_id="video_in", visible=True),
-                    gr.Button(value="Cancel processing", visible=False),
-                    gr.Button(interactive=True, value="Reset tracker stats", visible=False),
-                    gr.Checkbox(label="Save raw frames as .png files", interactive=True, value=self.general_settings.save_all_frames, visible=self.general_settings.camera_mode==InputMode.CAMERA),
-                    gr.Dropdown(choices=["-1", "0", "1", "2", "3"], label="Camera index (-1 is automatic detection)", interactive=True, value=str(self.general_settings.camera_index), visible=self.general_settings.camera_mode == InputMode.CAMERA)]
+            return [
+                gr.Button(value="Set to camera input mode", interactive=True),
+                gr.File(label="Input video", elem_id="video_in", visible=True),
+                gr.Button(value="Cancel processing", visible=False),
+                gr.Button(interactive=True, value="Reset tracker stats", visible=False),
+                gr.Checkbox(label="Save raw frames as .png files", interactive=True, value=self.general_settings.save_all_frames, visible=self.general_settings.camera_mode == InputMode.CAMERA),
+                gr.Dropdown(choices=["-1", "0", "1", "2", "3"], label="Camera index (-1 is automatic detection)", interactive=True, value=str(self.general_settings.camera_index), visible=self.general_settings.camera_mode == InputMode.CAMERA)
+            ]
 
     def await_analysis(self) -> list[Union[gr.Component, None]]:
         self.analysis_thread.join()
@@ -125,19 +131,20 @@ class ModelManager:
 
     def reset_tracker(self):
         """
-        Resets the tracker including statistics
+        Resets the tracker including statistics.
         """
         self.tracking_settings.reset = True
 
     def predict_gui(self, input_path: Union[str, List]):
         """
-        Wrapper function to start the real predict function in a thread and return the required blocks. This way the processing does not freeze the application
+        Wrapper function to start the real predict function in a thread and return the required blocks.
+
+        This way the processing does not freeze the application
+
         """
-        self.analysis_thread = threading.Thread(target=self.predict, args=(input_path,))
+        self.analysis_thread = threading.Thread(target=self.predict, args=(input_path, ))
         self.analysis_thread.start()
-        return [gr.Button(interactive=True, value="Cancel processing", visible=True),
-                gr.Button(interactive=True, value="Reset tracker stats", visible=True),
-                gr.Button(value="Set to camera mode", interactive=False)]
+        return [gr.Button(interactive=True, value="Cancel processing", visible=True), gr.Button(interactive=True, value="Reset tracker stats", visible=True), gr.Button(value="Set to camera mode", interactive=False)]
 
     def check_model_settings(self):
         if not self.model_settings.architecture or not self.model_settings.weights_path:
@@ -146,27 +153,21 @@ class ModelManager:
             return None
         return True
 
-
     @torch.no_grad()
     def predict(self, input_path: Optional[Union[str, list]], display: Optional[Display] = None, skip_frames: Optional[int] = 0):
         """
-        Standard predict function called by the Gradio component. The supported tasks include: object detection and segmentation and tracking. Tracking uses a different Predictor class to process the images
+        Standard predict function called by the Gradio component. The supported tasks include: object detection and segmentation and tracking. Tracking uses a different Predictor class to process the images.
 
-        :param display: instance of Display to show results of each prediction locally
-        :param input_path: path to an image or video
-        :param skip_frames: amount of frames to skip in the case of processing a video file. Useful for debugging
+        :param display: Instance of Display to show results of each prediction locally
+        :param input_path: Path to an image or video
+        :param skip_frames: Amount of frames to skip in the case of processing a video file. Useful for debugging
+
         """
         if not self.check_model_settings():
             return None
 
         if self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold():
-            self.predictor, self.predictor_parameters = PredictTracking(general_settings=self.general_settings,
-                                                                        model_settings=self.model_settings,
-                                                                        tracking_settings=self.tracking_settings,
-                                                                        websocket_server=self.websocket_server,
-                                                                        display=display,
-                                                                        skip_frames=skip_frames,
-                                                                        input_path=input_path,
+            self.predictor, self.predictor_parameters = PredictTracking(general_settings=self.general_settings, model_settings=self.model_settings, tracking_settings=self.tracking_settings, websocket_server=self.websocket_server, display=display, skip_frames=skip_frames, input_path=input_path,
                                                                         locker=self.locker).get_predictor()
         else:
             logger.exception("Task types other than tracking are not supported")

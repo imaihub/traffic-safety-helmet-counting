@@ -10,12 +10,11 @@ logger = Logger.setup_logger()
 
 def dynamic_load_weights_pt(model: torch.nn.Module, weights: dict) -> None:
     """
-    Dynamically loads weights into a PyTorch model, handling potential mismatches in layer sizes.
-    Provides verbose feedback on any mismatched layers and skips only those layers while keeping
-    the rest intact.
+    Dynamically loads weights into a PyTorch model, handling potential mismatches in layer sizes. Provides verbose feedback on any mismatched layers and skips only those layers while keeping the rest intact.
 
     :param model: The PyTorch model into which the weights are being loaded.
     :param weights: A dictionary containing the model weights, typically loaded from a checkpoint or pre-trained model.
+
     """
     # Get the current model's state dictionary
     current_model_dict = model.state_dict()
@@ -44,10 +43,7 @@ def dynamic_load_weights_pt(model: torch.nn.Module, weights: dict) -> None:
             print(f"- {layer}")
 
     # Remove mismatched layers from weights and reload
-    filtered_weights = {
-        k: v if k not in mismatched_layers else current_model_dict[k]
-        for k, v in weights.items()
-    }
+    filtered_weights = {k: v if k not in mismatched_layers else current_model_dict[k] for k, v in weights.items()}
     model.load_state_dict(filtered_weights, strict=False)
     print("Model weights loaded with mismatched layers resolved.")
 
@@ -56,11 +52,13 @@ def load_model_pt(model: torch.nn.Module, path: str, strict: bool = True, force:
     """
     This method loads a model from path into the model object.
 
-    :param model: a PyTorch model object with empty/random weights.
-    :param path: path to the model saved with :meth:~`elements.basic.save_model.save_model_pt`.
-    :param strict: ignores the weights for the head of the model if for example the num_classes don't match in the pretrained weights and the passed model
-    :param force: if True handle potential mismatches by skipping incompatible layers while loading in the weights.
-    :returns: the raw dictionary contents from path.
+    :param model: A PyTorch model object with empty/random weights.
+    :param path: Path to the model saved with :meth:~`elements.basic.save_model.save_model_pt`.
+    :param strict: Ignores the weights for the head of the model if for example the num_classes don't match in the pretrained weights and the passed model
+    :param force: If True handle potential mismatches by skipping incompatible layers while loading in the weights.
+
+    :returns: The raw dictionary contents from path.
+
     """
     # Load the checkpoint data
     data = torch.load(path, map_location=torch.device('cpu'))

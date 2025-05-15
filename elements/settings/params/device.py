@@ -5,9 +5,8 @@ from elements.settings.params.param_settings import ParamSetting
 
 class DeviceSetting(ParamSetting):
     """
-    Changes the device used for inference. Can be changed in the GUI
+    Changes the device used for inference.
     """
-
     def __init__(self, model_settings: ModelSettings, locker: Locker):
         super().__init__(locker)
         self.model_settings = model_settings

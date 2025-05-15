@@ -5,7 +5,7 @@ from elements.settings.params.param_settings import ParamSetting
 
 class TrackedClassesSetting(ParamSetting):
     """
-    Changes the tracked classes. Can be chosen in the GUI
+    Changes the tracked classes.
     """
     def __init__(self, general_settings: GeneralSettings, locker: Locker):
         super().__init__(locker)
@@ -14,4 +14,3 @@ class TrackedClassesSetting(ParamSetting):
     def update(self, classes: list) -> None:
         with self.locker.lock:
             self.general_settings.tracked_classes = classes
-

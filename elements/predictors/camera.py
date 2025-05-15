@@ -18,23 +18,9 @@ class PredictorTrackerCamera(PredictorBase):
     """
     A PredictorTrackerCamera is a type of Predictor that is responsible for the tracking of objects in a camera feed.
     """
-
-    def __init__(self,
-                 general_settings: GeneralSettings,
-                 model_settings: ModelSettings,
-                 tracking_settings: TrackingSettings,
-                 predictor_parameters: PredictorParameters,
-                 websocket_server: WebSocketServer,
-                 locker: Locker):
-        super().__init__(general_settings=general_settings,
-                         model_settings=model_settings,
-                         tracking_settings=tracking_settings,
-                         predictor_parameters=predictor_parameters,
-                         websocket_server=websocket_server,
-                         locker=locker)
-        self.result_saver.initiate_result_video(width=self.general_settings.screen_width,
-                                                height=self.general_settings.screen_height,
-                                                fps=5)  # The FPS is as guess as this information is not available until later
+    def __init__(self, general_settings: GeneralSettings, model_settings: ModelSettings, tracking_settings: TrackingSettings, predictor_parameters: PredictorParameters, websocket_server: WebSocketServer, locker: Locker):
+        super().__init__(general_settings=general_settings, model_settings=model_settings, tracking_settings=tracking_settings, predictor_parameters=predictor_parameters, websocket_server=websocket_server, locker=locker)
+        self.result_saver.initiate_result_video(width=self.general_settings.screen_width, height=self.general_settings.screen_height, fps=5)  # The FPS is as guess as this information is not available until later
 
     @torch.no_grad()
     def predict(self):

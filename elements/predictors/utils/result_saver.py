@@ -13,8 +13,8 @@ class ResultSaver:
     A ResultSaver instance is responsible for saving the results of a video analysis, whether that is loose images or the fully processed video.
 
     By using it as a context manager, you are sure that the VideoWriter instance gets released and that a copy of the resulting video gets saved
-    """
 
+    """
     def __init__(self, output_folder: str):
         self.logger = Logger.setup_logger()
         self.local_output_folder = "output"
@@ -43,14 +43,14 @@ class ResultSaver:
 
     def save_image(self, image: np.ndarray) -> None:
         """
-        Save an image to the output folder. Used when the count gets updated
+        Save an image to the output folder.
         """
         self.logger.info(f"Saving image to {os.path.join(self.output_folder, 'output', 'images', f'{time.time()}.png')}")
         cv2.imwrite(filename=os.path.join(self.output_folder, "output", "images", f"{time.time()}.png"), img=image)
 
     def initiate_result_video(self, width: int, height: int, fps: float) -> None:
         """
-        Instantiates a cv2.VideoWriter object
+        Instantiates a cv2.VideoWriter object.
         """
         # Proper frame size and codec
         self.frame_size = (width, height)  # (width, height)
@@ -72,7 +72,7 @@ class ResultSaver:
 
     def save_copy_video(self) -> str:
         """
-        Copies the fully analyzed video to a local directory
+        Copies the fully analyzed video to a local directory.
         """
         local_cache_copy = os.path.join(self.local_output_folder, "videos", os.path.basename(self.out_file))
         shutil.copy(src=self.out_file, dst=local_cache_copy)

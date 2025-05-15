@@ -8,9 +8,8 @@ from elements.utils import Logger
 
 class Predictor:
     """
-    A Predictor instance is responsible for performing inference on a given image with the model set in the constructor. Depending on the model, it can give extra parameters for example.
+    A Predictor instance is responsible for performing inference on a given image with the model set in the constructor.
     """
-
     def __init__(self, model_settings: ModelSettings, general_settings: GeneralSettings):
         self.logger = Logger.setup_logger()
         self.model_settings = model_settings
@@ -18,7 +17,7 @@ class Predictor:
 
     def predict(self, image: np.ndarray) -> np.ndarray:
         """
-        Performs inference on a given image
+        Performs inference on a given image.
         """
         if self.model_settings.model is None:
             return np.asarray([])

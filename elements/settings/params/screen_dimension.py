@@ -9,7 +9,6 @@ class ScreenDimensionSetting(ParamSetting):
     """
     Changes the width and height of the output result that will be displayed on the screen.
     """
-
     def __init__(self, general_settings: GeneralSettings, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings

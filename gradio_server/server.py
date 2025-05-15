@@ -40,8 +40,7 @@ setting_orchestrator.screen_dimension_setting.update(width=args.screen_width, he
 
 model_manager.start_websocket_server()
 
-demo = gr.Blocks(theme=gr.themes.Default(text_size=gr.themes.sizes.text_lg),
-                 css=css_injection)
+demo = gr.Blocks(theme=gr.themes.Default(text_size=gr.themes.sizes.text_lg), css=css_injection)
 
 if Tasks.TRACKING.name.casefold() in args.type.casefold():
     with demo:
@@ -68,7 +67,7 @@ if Tasks.TRACKING.name.casefold() in args.type.casefold():
                     realistic_processing_box = gr.Checkbox(label="Slow down processing", interactive=True, value=general_settings.realistic_processing, visible=True)
                     realistic_processing_box.change(setting_orchestrator.realistic_processing_setting.update, inputs=realistic_processing_box)
 
-                    save_all_frames_box = gr.Checkbox(label="Save raw frames as .png files", interactive=True, value=general_settings.save_all_frames, visible=general_settings.camera_mode==InputMode.CAMERA)
+                    save_all_frames_box = gr.Checkbox(label="Save raw frames as .png files", interactive=True, value=general_settings.save_all_frames, visible=general_settings.camera_mode == InputMode.CAMERA)
                     save_all_frames_box.change(setting_orchestrator.save_all_frames_setting.update, inputs=save_all_frames_box)
 
                     save_results_box = gr.Checkbox(label="Construct an .mp4 file with processed frames", interactive=True, value=general_settings.save_results)
@@ -108,13 +107,13 @@ if Tasks.TRACKING.name.casefold() in args.type.casefold():
 
                 input_image_box.upload(fn=model_manager.predict_gui, inputs=[input_image_box], outputs=[analysis_button, reset_tracker_stats_button, camera_button]).then(model_manager.await_analysis, outputs=[input_image_box, analysis_button, reset_tracker_stats_button, camera_button])
 
-
         analysis_button.click(model_manager.toggle_analysis, outputs=[analysis_button, reset_tracker_stats_button])
         camera_button.click(model_manager.switch_camera_mode, outputs=[camera_button, input_image_box, analysis_button, reset_tracker_stats_button, save_all_frames_box, camera_index_box])
         reset_tracker_stats_button.click(model_manager.reset_tracker)
 
-        advanced_view.change(setting_orchestrator.advanced_view_setting.update, inputs=advanced_view,
-                             outputs=[bit_box, width_input_box, height_input_box, box_threshold_box, gamma_correction_bool_box, gamma_correction_value_box, tracker_option_1, tracker_option_2, tracker_option_3, tracker_option_4, realistic_processing_box])
+        advanced_view.change(
+            setting_orchestrator.advanced_view_setting.update, inputs=advanced_view, outputs=[bit_box, width_input_box, height_input_box, box_threshold_box, gamma_correction_bool_box, gamma_correction_value_box, tracker_option_1, tracker_option_2, tracker_option_3, tracker_option_4, realistic_processing_box]
+        )
 
         device_box.change(setting_orchestrator.device_setting.update, inputs=device_box)
         bit_box.change(setting_orchestrator.bpp_setting.update, inputs=bit_box)
@@ -125,12 +124,8 @@ if Tasks.TRACKING.name.casefold() in args.type.casefold():
 
         output_folder.change(setting_orchestrator.output_folder_setting.update, inputs=output_folder)
 
-        model_architectures.change(fn=setting_orchestrator.architecture_setting.update,
-                                   inputs=model_architectures,
-                                   outputs=[weights, width_input_box, height_input_box, check_boxes])
-        weights.change(fn=setting_orchestrator.weights_setting.update,
-                       inputs=weights,
-                       outputs=check_boxes)
+        model_architectures.change(fn=setting_orchestrator.architecture_setting.update, inputs=model_architectures, outputs=[weights, width_input_box, height_input_box, check_boxes])
+        weights.change(fn=setting_orchestrator.weights_setting.update, inputs=weights, outputs=check_boxes)
 
         demo.load(fn=None, js=js_injection)
 

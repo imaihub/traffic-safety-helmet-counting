@@ -19,37 +19,21 @@ from gradio_server.websocket_manager.websocket_manager import WebSocketServer
 class PredictorTrackerInput(PredictorBase):
     """
     A PredictorTrackerInputLive  is a type of Predictor that is responsible for the tracking of objects in a given video.
-    It returns the path of a fully analyzed video for Gradio to show it. This means users don't get to see "realtime" analysis
     """
-
-    def __init__(self,
-                 general_settings: GeneralSettings,
-                 model_settings: ModelSettings,
-                 tracking_settings: TrackingSettings,
-                 predictor_parameters: PredictorParameters,
-                 websocket_server: WebSocketServer,
-                 locker: Locker):
-        super().__init__(
-            general_settings=general_settings,
-            model_settings=model_settings,
-            tracking_settings=tracking_settings,
-            predictor_parameters=predictor_parameters,
-            websocket_server=websocket_server,
-            locker=locker)
+    def __init__(self, general_settings: GeneralSettings, model_settings: ModelSettings, tracking_settings: TrackingSettings, predictor_parameters: PredictorParameters, websocket_server: WebSocketServer, locker: Locker):
+        super().__init__(general_settings=general_settings, model_settings=model_settings, tracking_settings=tracking_settings, predictor_parameters=predictor_parameters, websocket_server=websocket_server, locker=locker)
 
     @torch.no_grad()
     def predict(self):
         """
-        Processes a single video from the input_path passed. Returns the path with a copy of the resulting video for Gradio
+        Processes a single video from the input_path passed.
         """
         try:
             if self.general_settings.application_mode == ApplicationMode.GUI:
                 self.wait_for_websocket()
 
             with VideoReader(self.predictor_parameters.input_path) as video_reader:
-                self.result_saver.initiate_result_video(width=self.general_settings.screen_width,
-                                                        height=self.general_settings.screen_height,
-                                                        fps=video_reader.fps)
+                self.result_saver.initiate_result_video(width=self.general_settings.screen_width, height=self.general_settings.screen_height, fps=video_reader.fps)
 
                 with self.result_saver:
                     for current_frame, image in video_reader.frames(skip_frames=self.predictor_parameters.skip_frames):

@@ -11,9 +11,11 @@ from elements.settings.params.param_settings import ParamSetting
 
 class ArchitectureSetting(ParamSetting):
     """
-    Changes the architecture when a user picks another from the DropDown element. Updates the available weight options when that happens
-    """
+    Changes the architecture when a user picks another from the DropDown element.
 
+    Updates the available weight options when that happens
+
+    """
     def __init__(self, general_settings: GeneralSettings, model_settings: ModelSettings, config_parser: ConfigParser, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings
@@ -25,6 +27,7 @@ class ArchitectureSetting(ParamSetting):
         Loads in the model given the architecture name. Some models need the weights to be loaded thus with those, nothing gets loaded in this function.
 
         return gr.DropDown component as the selectable weights list needs the architecture to find compatible weights
+
         """
 
         with self.locker.lock:
@@ -48,11 +51,12 @@ class ArchitectureSetting(ParamSetting):
         self.general_settings.input_height = self.config_parser.current_config.input_height
 
         if self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold():
-            return (gr.Dropdown(choices=[config.weights for config in self.config_parser.all_configs if config.architecture == architecture], interactive=True),
-                    gr.Text(str(self.general_settings.input_width) if self.general_settings.input_width else 0, interactive=True),
-                    gr.Text(str(self.general_settings.input_height) if self.general_settings.input_height else 0, interactive=True),
-                    gr.CheckboxGroup(label="Which objects should be tracked", choices=self.config_parser.current_config.classes, value=self.general_settings.tracked_classes, interactive=True))
+            return (
+                gr.Dropdown(choices=[config.weights for config in self.config_parser.all_configs if config.architecture == architecture], interactive=True), gr.Text(str(self.general_settings.input_width) if self.general_settings.input_width else 0, interactive=True),
+                gr.Text(str(self.general_settings.input_height) if self.general_settings.input_height else 0, interactive=True), gr.CheckboxGroup(label="Which objects should be tracked", choices=self.config_parser.current_config.classes, value=self.general_settings.tracked_classes, interactive=True)
+            )
         else:
-            return (gr.Dropdown(choices=[config.weights for config in self.config_parser.all_configs if config.architecture == architecture], interactive=True),
-                    gr.Text(str(self.general_settings.input_width) if self.general_settings.input_width else 0, interactive=True),
-                    gr.Text(str(self.general_settings.input_height) if self.general_settings.input_height else 0, interactive=True))
+            return (
+                gr.Dropdown(choices=[config.weights for config in self.config_parser.all_configs if config.architecture == architecture], interactive=True), gr.Text(str(self.general_settings.input_width) if self.general_settings.input_width else 0,
+                                                                                                                                                                     interactive=True), gr.Text(str(self.general_settings.input_height) if self.general_settings.input_height else 0, interactive=True)
+            )

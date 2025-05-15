@@ -3,7 +3,7 @@ from enum import Enum
 
 class Tasks(Enum):
     """
-    Different tasks in computer vision
+    Different tasks in computer vision.
     """
     OBJECT_DETECTION = 0
     CLASSIFICATION = 1
@@ -14,7 +14,7 @@ class Tasks(Enum):
 
 class NormalizeType(Enum):
     """
-    Method of normalization to be used in the preprocessing step
+    Method of normalization to be used in the preprocessing step.
     """
     IMAGE_NET = 0
     SCALED_IMAGE_NET = 1
@@ -24,7 +24,7 @@ class NormalizeType(Enum):
 
 class InputMode(Enum):
     """
-    Different modes of tracking, either video file input or camera feed input
+    Different modes of tracking, either video file input or camera feed input.
     """
     CAMERA = 0
     FILE = 1
@@ -32,7 +32,7 @@ class InputMode(Enum):
 
 class ApplicationMode(Enum):
     """
-    Mode of the application, either CLI or GUI
+    Mode of the application, either CLI or GUI.
     """
     CLI = 0
     GUI = 1

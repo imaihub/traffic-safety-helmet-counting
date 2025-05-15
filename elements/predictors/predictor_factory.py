@@ -12,16 +12,9 @@ from elements.utils import Logger
 
 class PredictorFactory(ABC):
     """
-    Base class of every factory constructing a Predictor object
+    Base class of every factory constructing a Predictor object.
     """
-    def __init__(self, general_settings: GeneralSettings,
-                 model_settings: ModelSettings,
-                 tracking_settings: Optional[TrackingSettings],
-                 websocket_server,
-                 display: Optional[Display],
-                 skip_frames: Optional[int],
-                 input_path: Optional[Union[str, List]],
-                 locker: Locker):
+    def __init__(self, general_settings: GeneralSettings, model_settings: ModelSettings, tracking_settings: Optional[TrackingSettings], websocket_server, display: Optional[Display], skip_frames: Optional[int], input_path: Optional[Union[str, List]], locker: Locker):
         self.logger = Logger.setup_logger()
 
         self.general_settings = general_settings

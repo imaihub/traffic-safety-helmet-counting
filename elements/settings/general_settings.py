@@ -9,7 +9,7 @@ from elements.enums import NormalizeType, InputMode, ApplicationMode
 @dataclass
 class GeneralSettings:
     """
-    These are the parameters that get used throughout the application. They initially get set using the current config from the config.yaml
+    These are the parameters that get used throughout the application.
     """
     def __init__(self) -> None:
         self.task_type: Optional[str] = None

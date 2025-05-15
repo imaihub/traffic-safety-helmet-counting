@@ -2,15 +2,15 @@ import cv2
 import numpy as np
 
 
-def draw_fps_text(image: np.ndarray, text: str, text_color: tuple=(40, 255, 255)):
+def draw_fps_text(image: np.ndarray, text: str, text_color: tuple = (40, 255, 255)):
     """
     Draws an FPS component on the image in the upper left corner.
 
     :param image: The image to draw on.
     :param text: Text to display above the progress bar.
     :param text_color: BGR color for the text.
-
     :return: Image with progress bar drawn on it.
+
     """
     img = image.copy()
 
@@ -28,7 +28,7 @@ def draw_fps_text(image: np.ndarray, text: str, text_color: tuple=(40, 255, 255)
     return img
 
 
-def draw_progress_bar(image: np.ndarray, text: str, percentage: float, bar_color: tuple = (0, 255, 0), bg_color: tuple = (50, 50, 50), text_color: tuple=(255, 255, 255)):
+def draw_progress_bar(image: np.ndarray, text: str, percentage: float, bar_color: tuple = (0, 255, 0), bg_color: tuple = (50, 50, 50), text_color: tuple = (255, 255, 255)):
     """
     Draws a progress bar on the image with a label above it.
 
@@ -38,8 +38,8 @@ def draw_progress_bar(image: np.ndarray, text: str, percentage: float, bar_color
     :param bar_color: BGR color of the progress fill.
     :param bg_color: BGR background color of the progress bar.
     :param text_color: BGR color for the text.
-
     :return: Image with progress bar drawn on it.
+
     """
     img = image.copy()
     h, w = img.shape[:2]

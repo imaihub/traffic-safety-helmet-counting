@@ -49,7 +49,7 @@ class WebSocketServer:
 
     def start_websocket_server(self) -> None:
         """
-        This function runs in a new thread and manages its own event loop
+        This function runs in a new thread and manages its own event loop.
         """
         asyncio.set_event_loop(self.loop)
         self.loop.run_until_complete(self.serve())

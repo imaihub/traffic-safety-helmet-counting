@@ -7,9 +7,8 @@ from elements.settings.params.param_settings import ParamSetting
 
 class ResetStatsMinSetting(ParamSetting):
     """
-    Changes the interval the stats should be reset using camera mode
+    Changes the interval the stats should be reset using camera mode.
     """
-
     def __init__(self, general_settings: GeneralSettings, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings
@@ -24,4 +23,3 @@ class ResetStatsMinSetting(ParamSetting):
                 self.logger.error(traceback.format_exc())
                 self.logger.exception(e)
                 self.logger.info(f"Sticking with an reset stats minutes of {self.general_settings.reset_stats_min}")
-

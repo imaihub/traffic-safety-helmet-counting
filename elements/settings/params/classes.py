@@ -5,9 +5,8 @@ from elements.settings.params.param_settings import ParamSetting
 
 class ClassesSetting(ParamSetting):
     """
-    Updated the expected classes coming from the predictions. Gets set on startup
+    Updated the expected classes coming from the predictions.
     """
-
     def __init__(self, general_settings: GeneralSettings, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings

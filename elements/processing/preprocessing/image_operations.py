@@ -9,7 +9,7 @@ class ImageOperations:
     @staticmethod
     def load_image(input_path: str, bit: int) -> np.ndarray:
         """
-        Load an image from a path and return a numpy array representation
+        Load an image from a path and return a numpy array representation.
         """
         if isinstance(input_path, str):
             input_data = cv2.imread(input_path, -1)

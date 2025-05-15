@@ -5,9 +5,8 @@ from elements.settings.params.param_settings import ParamSetting
 
 class OutputFolderSetting(ParamSetting):
     """
-    Changes output folder where the final video and interim images get stored. Can be changed in the GUI
+    Changes output folder where the final video and interim images get stored.
     """
-
     def __init__(self, general_settings: GeneralSettings, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings

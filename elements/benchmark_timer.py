@@ -9,16 +9,15 @@ from elements.utils import Logger
 
 class BenchmarkTimer:
     """
-    This class gives the developer the option to easily time their code. Use it like a context manager.
+    This class gives the developer the option to easily time their code, use it like a context manager.
     """
-
     def __init__(
-            self,
-            name: str,
-            include_gpu: Optional[bool] = False,
-            wait_time: Optional[int] = None,  # In milliseconds
-            print_time: Optional[bool] = False,
-            include_cpu_time: Optional[bool] = False,
+        self,
+        name: str,
+        include_gpu: Optional[bool] = False,
+        wait_time: Optional[int] = None,  # In milliseconds
+        print_time: Optional[bool] = False,
+        include_cpu_time: Optional[bool] = False,
     ):
         self.logger = Logger.setup_logger()
 
@@ -34,14 +33,14 @@ class BenchmarkTimer:
 
     def __enter__(self) -> Self:
         """
-        Entering function of the ContextManager
+        Entering function of the ContextManager.
         """
         self.start()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         """
-        Exiting function of the ContextManager
+        Exiting function of the ContextManager.
         """
 
         self.stop()
@@ -54,7 +53,7 @@ class BenchmarkTimer:
 
     def start(self) -> None:
         """
-        Start the timer
+        Start the timer.
         """
         if self.include_gpu:
             if multiprocessing.parent_process() is None and torch.cuda.is_available():
@@ -65,7 +64,7 @@ class BenchmarkTimer:
 
     def stop(self) -> None:
         """
-        Stop the timer
+        Stop the timer.
         """
         if self.include_gpu and torch.cuda.is_available():
             torch.cuda.synchronize()
@@ -83,7 +82,7 @@ class BenchmarkTimer:
 
     def print_time(self, include_cpu_time: bool = False) -> None:
         """
-        Prints the time of the code
+        Prints the time of the code.
         """
         real_time = self.elapsed_real_time()
         self.logger.info(f"Real time for {self.name}: {real_time:.4f} seconds")
@@ -93,14 +92,14 @@ class BenchmarkTimer:
 
     def reset(self) -> None:
         """
-        Resets the timer
+        Resets the timer.
         """
         self.start_real = None
         self.start_cpu = None
 
     def wait_until(self) -> None:
         """
-        Wait until a certain amount of milliseconds is passed from the moment the timer started
+        Wait until a certain amount of milliseconds is passed from the moment the timer started.
         """
         if self.wait_time is None:
             self.logger.warning("Wait time never set, thus cannot wait until a specific time")
@@ -117,7 +116,7 @@ class BenchmarkTimer:
 
     def get_timings(self) -> dict:
         """
-        Get timing data for both real_time and cpu_time
+        Get timing data for both real_time and cpu_time.
         """
         return {
             "real_time": self.elapsed_real_time(),

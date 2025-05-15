@@ -5,7 +5,7 @@ from elements.settings.params.param_settings import ParamSetting
 
 class InputHeightSetting(ParamSetting):
     """
-    Changes the input height value which gets used in the preprocessing step. Can cause issues with inference. Can be changed in the GUI
+    Changes the input height value which gets used in the preprocessing step.
     """
     def __init__(self, general_settings: GeneralSettings, locker: Locker):
         super().__init__(locker)
@@ -20,4 +20,3 @@ class InputHeightSetting(ParamSetting):
             except Exception as e:
                 self.logger.exception(e)
                 self.logger.info(f"Sticking with an input height of {self.general_settings.input_height}")
-

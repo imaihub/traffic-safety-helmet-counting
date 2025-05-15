@@ -13,7 +13,6 @@ class LoadModelYolo(LoadModel):
     """
     This class is responsible for loading in yolov8 models.
     """
-
     def __init__(self, model_name: str, weights_file: str, num_classes: int = 1, device: str = "cuda", version: str = "n"):
         super().__init__(weights_file=weights_file, num_classes=num_classes, device=device)
         self.model_name = model_name
@@ -21,7 +20,7 @@ class LoadModelYolo(LoadModel):
 
     def load_model(self) -> torch.nn.Module:
         """
-        Loads in a monolytics YOLO model and returns it
+        Loads in an Ultralytics YOLO model and returns it.
         """
         self.logger.info(f"Loading {self.weights_file}")
         return YOLO(model=str(os.path.join(self.base_path, "models", "architectures", self.model_name, self.weights_file))).to(self.device)

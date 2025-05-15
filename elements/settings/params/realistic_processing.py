@@ -5,8 +5,7 @@ from elements.settings.params.param_settings import ParamSetting
 
 class RealisticProcessingSetting(ParamSetting):
     """
-    Changes whether the application corrects for slowing processing times by skipping frames. This can severely reduce the accuracy of the count as for all data gets used.
-    Can be toggled in the GUI
+    Changes whether the application corrects for too fast processing if using good hardware.
     """
     def __init__(self, general_settings: GeneralSettings, locker: Locker):
         super().__init__(locker)

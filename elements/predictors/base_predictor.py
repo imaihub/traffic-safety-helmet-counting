@@ -35,14 +35,7 @@ class PredictorBase(ABC):
     """
     PredictorBase contains already defined functions and functions that still have to be implemented regarding the inference on camera feeds and video input files.
     """
-
-    def __init__(self,
-                 general_settings: GeneralSettings,
-                 model_settings: ModelSettings,
-                 tracking_settings: TrackingSettings,
-                 predictor_parameters: PredictorParameters,
-                 websocket_server: WebSocketServer,
-                 locker: Locker):
+    def __init__(self, general_settings: GeneralSettings, model_settings: ModelSettings, tracking_settings: TrackingSettings, predictor_parameters: PredictorParameters, websocket_server: WebSocketServer, locker: Locker):
         self.logger = Logger.setup_logger()
         self.websocket = websocket_server
 
@@ -65,7 +58,7 @@ class PredictorBase(ABC):
 
     def initialize_helpers(self) -> tuple[Predictor, BoxProcessor, ResultSaver, CombineBoxes]:
         """
-        Instantiate building blocks for the prediction process and postprocessing like Predictor, BoxProcessor, ResultSaver and CombineBoxes
+        Instantiate building blocks for the prediction process and postprocessing like Predictor, BoxProcessor, ResultSaver and CombineBoxes.
         """
         result_saver = self.initialize_result_saver()
 
@@ -77,35 +70,33 @@ class PredictorBase(ABC):
 
     def initialize_predictor(self) -> Predictor:
         """
-        Instantiate the predictor from the general settings and model settings
+        Instantiate the predictor from the general settings and model settings.
         """
         return Predictor(model_settings=self.model_settings, general_settings=self.general_settings)
 
     def initialize_box_processor(self) -> BoxProcessor:
         """
-        Instantiate the box processor from the general settings and model settings
+        Instantiate the box processor from the general settings and model settings.
         """
         return BoxProcessor(general_settings=self.general_settings)
 
     def initialize_result_saver(self) -> ResultSaver:
         """
-        Instantiate the result saver from general settings and model settings
+        Instantiate the result saver from general settings and model settings.
         """
         return ResultSaver(output_folder=self.general_settings.output_folder)
 
     def initialize_combine_boxes(self) -> CombineBoxes:
         """
-        Instantiate the combine_boxes from the general settings and model settings
+        Instantiate the combine_boxes from the general settings and model settings.
         """
         return CombineBoxes(general_settings=self.general_settings, color_map=self.color_map)
 
     def update_settings(self) -> None:
         """
-        Resets the tracker
+        Resets the tracker.
         """
-        _, tracker_processor = TrackerFactory.create(general_settings=self.general_settings,
-                                                     tracking_settings=self.tracking_settings,
-                                                     model_settings=self.model_settings)
+        _, tracker_processor = TrackerFactory.create(general_settings=self.general_settings, tracking_settings=self.tracking_settings, model_settings=self.model_settings)
         self.predictor_parameters.tracker_processor = tracker_processor
 
         self.box_processor = self.initialize_box_processor()
@@ -116,7 +107,7 @@ class PredictorBase(ABC):
 
     def abort(self) -> None:
         """
-        Stops the analyzing, invoked by user interactions with the GUI
+        Stops the analyzing, invoked by user interactions with the GUI.
         """
         self.aborting = True
         if self.general_settings.reset_stats_min > 0:
@@ -124,7 +115,7 @@ class PredictorBase(ABC):
 
     def wait_for_websocket(self) -> None:
         """
-        Wait until websocket connection is established
+        Wait until websocket connection is established.
         """
         self.logger.info("Waiting for websocket connection...")
         while not self.websocket.client_connected_event.is_set():
@@ -134,10 +125,9 @@ class PredictorBase(ABC):
 
     def set_response(self, image: np.ndarray) -> None:
         """
-        Set the base64 representation of the image as a response in the websocket instance
+        Set the base64 representation of the image as a response in the websocket instance.
         """
-        _, buffer = cv2.imencode('.jpg', image,
-                                 params=[int(cv2.IMWRITE_JPEG_QUALITY), 85])  # Convert the frame to JPG format
+        _, buffer = cv2.imencode('.jpg', image, params=[int(cv2.IMWRITE_JPEG_QUALITY), 85])  # Convert the frame to JPG format
 
         frame_base64 = pybase64.b64encode(buffer).decode('utf-8')  # Encode to base64
 
@@ -146,11 +136,14 @@ class PredictorBase(ABC):
 
     def process_frame(self, image: np.ndarray, display: Optional[Display]) -> tuple[np.ndarray, bool]:
         """
-        Performs inference on a single image using the predictor passed. Additionally does:
+        Performs inference on a single image using the predictor passed.
+
+        Additionally does:
         1. Creates a numpy representations of the boxes from the model
         2. Updates the tracker state with those boxes
         3. Visualizes the boxes on top of the original image
         4. Display the resulting image if a Display instance is passed
+
         """
         processing_timer = BenchmarkTimer("Process frame", print_time=False)
 
@@ -173,9 +166,7 @@ class PredictorBase(ABC):
             save_image = self.predictor_parameters.tracker_processor.update_tracks(active_tracks=boxes_from_active_tracks, verbose=False)
 
             visualization_image = cv2.resize(visualization_image, (self.general_settings.screen_width, self.general_settings.screen_height))
-            boxes_from_active_tracks = Resize.resize_boxes(boxes=boxes_from_active_tracks,
-                                                           dimension_from=(int(self.general_settings.input_width), int(self.general_settings.input_height)),
-                                                           dimension_to=(int(self.general_settings.screen_width), int(self.general_settings.screen_height)))
+            boxes_from_active_tracks = Resize.resize_boxes(boxes=boxes_from_active_tracks, dimension_from=(int(self.general_settings.input_width), int(self.general_settings.input_height)), dimension_to=(int(self.general_settings.screen_width), int(self.general_settings.screen_height)))
 
             if boxes_from_active_tracks:
                 self.combine_boxes.set_boxes(boxes=boxes_from_active_tracks)
@@ -205,6 +196,6 @@ class PredictorBase(ABC):
     @abstractmethod
     def predict(self) -> Optional[np.ndarray]:
         """
-        Abstract function for handling a camera feed and video input files for inference
+        Abstract function for handling a camera feed and video input files for inference.
         """
         pass

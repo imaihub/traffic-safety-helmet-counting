@@ -6,13 +6,15 @@ from torch import Tensor
 
 def decode_yolo_boxes_pt(model: torch.nn.Module, preds: Tuple[Any, ...], image_batch: torch.Tensor, margin: int = 0) -> list[Tensor]:
     """
-    Decode the output of YoloV8 to create boxes
+    Decode the output of YoloV8 to create boxes.
 
-    :param model: the model
-    :param preds: the predictions output of :meth:`elements.predict.detection.predict_yolov5_pt`
-    :param image_batch: the original image_batch that provided the raw_boxes
-    :param margin: boxes outside this margin will be rejected
-    :return: decoded boxes containing [[y1, x1, y2, y2, class_id, class_prob]]
+    :param model: The model
+    :param preds: The predictions output of :meth:`elements.predict.detection.predict_yolov5_pt`
+    :param image_batch: The original image_batch that provided the raw_boxes
+    :param margin: Boxes outside this margin will be rejected
+
+    :return: Decoded boxes containing [[y1, x1, y2, y2, class_id, class_prob]]
+
     """
     bboxes_batch = model.detections(preds)
     if margin > 0:  # Check if centroid is outside border margin

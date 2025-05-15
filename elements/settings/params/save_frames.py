@@ -5,9 +5,11 @@ from elements.settings.params.param_settings import ParamSetting
 
 class SaveAllFrames(ParamSetting):
     """
-    Change the save all frames setting. If on, every raw frame from the camera will be saved.
-    """
+    Change the save all frames setting.
 
+    If on, every raw frame from the camera will be saved.
+
+    """
     def __init__(self, general_settings: GeneralSettings, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings

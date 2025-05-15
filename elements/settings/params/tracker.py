@@ -8,9 +8,8 @@ from elements.settings.tracking_settings import TrackingSettings
 
 class TrackerSetting(ParamSetting):
     """
-    Select the tracker to use to track objects throughout the video. Currently only DeepOCSort is implemented
+    Select the tracker to use to track objects throughout the video.
     """
-
     def __init__(self, general_settings: GeneralSettings, tracking_settings: TrackingSettings, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings
@@ -38,9 +37,11 @@ class TrackerSetting(ParamSetting):
 
 class TrackerOption1Settings(ParamSetting):
     """
-    Adjusts the first tracker option shown in the GUI. This can mean difference parameters for different trackers.
-    """
+    Adjusts the first tracker option shown in the GUI.
 
+    This can mean difference parameters for different trackers.
+
+    """
     def __init__(self, general_settings: GeneralSettings, tracking_settings: TrackingSettings, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings
@@ -63,9 +64,11 @@ class TrackerOption1Settings(ParamSetting):
 
 class TrackerOption2Settings(ParamSetting):
     """
-    Adjusts the second tracker option shown in the GUI. This can mean difference parameters for different trackers.
-    """
+    Adjusts the second tracker option shown in the GUI.
 
+    This can mean difference parameters for different trackers.
+
+    """
     def __init__(self, general_settings: GeneralSettings, tracking_settings: TrackingSettings, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings
@@ -88,9 +91,11 @@ class TrackerOption2Settings(ParamSetting):
 
 class TrackerOption3Settings(ParamSetting):
     """
-    Adjusts the third tracker option shown in the GUI. This can mean difference parameters for different trackers.
-    """
+    Adjusts the third tracker option shown in the GUI.
 
+    This can mean difference parameters for different trackers.
+
+    """
     def __init__(self, general_settings: GeneralSettings, tracking_settings: TrackingSettings, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings
@@ -113,9 +118,11 @@ class TrackerOption3Settings(ParamSetting):
 
 class TrackerOption4Settings(ParamSetting):
     """
-    Adjusts the fourth tracker option shown in the GUI. This can mean difference parameters for different trackers.
-    """
+    Adjusts the fourth tracker option shown in the GUI.
 
+    This can mean difference parameters for different trackers.
+
+    """
     def __init__(self, general_settings: GeneralSettings, tracking_settings: TrackingSettings, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings

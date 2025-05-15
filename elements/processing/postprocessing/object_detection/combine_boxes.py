@@ -11,9 +11,8 @@ from elements.utils import get_color_map, Logger
 
 class CombineBoxes(Processing):
     """
-    Merges bounding boxes into an image
+    Merges bounding boxes into an image.
     """
-
     def __init__(self, general_settings: GeneralSettings, color_map: Optional[list], ratios: Optional[tuple] = None):
         self.logger = Logger.setup_logger()
         self.general_settings = general_settings
@@ -23,18 +22,18 @@ class CombineBoxes(Processing):
 
     def set_boxes(self, boxes: list[BoundingBox]) -> None:
         """
-        Sets the boxes to visualize
+        Sets the boxes to visualize.
         """
         self.boxes = boxes
 
     def apply(self, image: np.ndarray) -> np.ndarray:
         """
-        Visualizes the boxes set in set_boxes with the confidence, class name and track id
+        Visualizes the boxes set in set_boxes with the confidence, class name and track id.
         """
         if not self.general_settings.bpp == 8:
             for v in self.color_map:
-                v /= (2 ** 8 - 1)
-                v * (2 ** self.general_settings.bpp - 1)
+                v /= (2**8 - 1)
+                v * (2**self.general_settings.bpp - 1)
 
         if len(self.boxes) == 0:
             self.logger.warning(f"No boxes found")

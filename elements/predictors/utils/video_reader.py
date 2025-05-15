@@ -8,7 +8,6 @@ class VideoReader:
     """
     A VideoReader instance is responsible for taking in a video path and returning it frame for frame in a generator method.
     """
-
     def __init__(self, input_path: str) -> None:
         self.vidcap: cv2.VideoCapture = cv2.VideoCapture(input_path)
         if not self.vidcap.isOpened():

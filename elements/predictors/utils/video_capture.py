@@ -18,14 +18,15 @@ possible_resolutions = {
     (1920, 1080): False,
 }
 
+
 def get_webcam_settings(camera_index: int = -1, verbose: bool = False) -> cv2.VideoCapture | None:
     """
     Tests webcam settings automatically to get valid settings, namely the camera index and maximum valid resolution.
 
-    :param camera_index: if manually set, this is the camera index to use. -1 means automatic
-    :param verbose: give a summary of possible webcam settings
+    :param camera_index: If manually set, this is the camera index to use. -1 means automatic
+    :param verbose: Give a summary of possible webcam settings
+    :return: Camera index to use, and the maximum valid resolution.
 
-    :return: camera index to use, and the maximum valid resolution.
     """
     def create_video_capture(camera_index: int, resolution: tuple) -> cv2.VideoCapture:
         cap = cv2.VideoCapture(camera_index, apiPreference=cv2.CAP_ANY)
@@ -80,7 +81,6 @@ def get_webcam_settings(camera_index: int = -1, verbose: bool = False) -> cv2.Vi
         logger.exception("No valid resolution found, camera mode not possible")
         return None
 
-
     if verbose:
         print("Possible webcam settings:")
         for resolution in possible_resolutions:
@@ -94,12 +94,10 @@ def get_webcam_settings(camera_index: int = -1, verbose: bool = False) -> cv2.Vi
     return cap
 
 
-
 class VideoCapture:
     """
     A VideoCapture instance is responsible for reading images from the webcam and returning it frame for frame in a generator method.
     """
-
     def __init__(self, camera_index: int = 0, save_directory: str = "output"):
         self.logger = Logger.setup_logger()
         self.vidcap = get_webcam_settings(camera_index=camera_index, verbose=True)

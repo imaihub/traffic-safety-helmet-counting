@@ -14,12 +14,7 @@ class Resize:
         for i in range(len(boxes)):
             box = boxes[i]
             if isinstance(box, BoundingBox):
-                box.set_minmax_xy(
-                    xmin=box.x1 * width_ratio,
-                    ymin=box.y1 * height_ratio,
-                    xmax=box.x2 * width_ratio,
-                    ymax=box.y2 * height_ratio
-                )
+                box.set_minmax_xy(xmin=box.x1 * width_ratio, ymin=box.y1 * height_ratio, xmax=box.x2 * width_ratio, ymax=box.y2 * height_ratio)
             elif isinstance(box, np.ndarray):
                 box[0] = box[0] * width_ratio
                 box[1] = box[1] * height_ratio

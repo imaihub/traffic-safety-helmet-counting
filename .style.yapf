@@ -1,0 +1,14 @@
+[style]
+based_on_style = pep8
+column_limit = 320
+split_before_expression_after_opening_paren = false
+allow_split_before_dict_value = false
+split_all_comma_separated_values = false
+split_complex_comprehension = false
+split_arguments_when_comma_terminated = false
+split_before_first_argument = false
+dedent_closing_brackets = true
+coalesce_brackets = true
+split_all_top_level_comma_separated_values = false
+blank_line_before_nested_class_or_def = false
+spaces_around_dict_delimiters = false

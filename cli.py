@@ -36,8 +36,7 @@ model_settings = ModelSettings()
 tracking_settings = TrackingSettings()
 
 model_manager = ModelManager(args)
-model_manager.initialize_settings(general_settings=general_settings, model_settings=model_settings,
-                                  tracking_settings=tracking_settings)
+model_manager.initialize_settings(general_settings=general_settings, model_settings=model_settings, tracking_settings=tracking_settings)
 
 config = model_manager.get_parsed_config()
 full_input_path = os.path.join("dataset", args.input)
@@ -59,20 +58,11 @@ display = Display()
 locker = Locker()
 if args.camera_mode:
     setting_orchestrator.camera_mode_setting.update(InputMode.CAMERA)
-    predictor, predictor_parameters = PredictTracking(general_settings=general_settings,
-                                                      model_settings=model_settings,
-                                                      tracking_settings=tracking_settings,
-                                                      display=display,
-                                                      locker=locker).get_predictor()
+    predictor, predictor_parameters = PredictTracking(general_settings=general_settings, model_settings=model_settings, tracking_settings=tracking_settings, display=display, locker=locker).get_predictor()
 
     predictor.predict()
 else:
     setting_orchestrator.camera_mode_setting.update(InputMode.FILE)
-    predictor, predictor_parameters = PredictTracking(general_settings=general_settings,
-                                                      model_settings=model_settings,
-                                                      tracking_settings=tracking_settings,
-                                                      display=display,
-                                                      input_path=full_input_path,
-                                                      locker=locker).get_predictor()
+    predictor, predictor_parameters = PredictTracking(general_settings=general_settings, model_settings=model_settings, tracking_settings=tracking_settings, display=display, input_path=full_input_path, locker=locker).get_predictor()
 
     predictor.predict()

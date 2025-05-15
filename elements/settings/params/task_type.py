@@ -5,7 +5,7 @@ from elements.settings.params.param_settings import ParamSetting
 
 class TaskTypeSetting(ParamSetting):
     """
-    Sets the task type mode. Gets set on startup only
+    Sets the task type mode.
     """
     def __init__(self, general_settings: GeneralSettings, locker: Locker) -> None:
         super().__init__(locker)

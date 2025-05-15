@@ -9,9 +9,10 @@ import yaml
 from elements.model import ModelConfig
 from elements.utils import Logger
 
+
 class ConfigParser:
     """
-    Holds the logic to parse the config.yaml file consisting the settings for each model
+    Holds the logic to parse the config.yaml file consisting the settings for each model.
     """
     def __init__(self, template: Optional[str] = None):
         self.logger = Logger.setup_logger()
@@ -42,7 +43,6 @@ class ConfigParser:
 
             if self.template is not None:
                 self.current_config = self.get_current_config()
-
 
         except Exception as e:
             self.logger.error(traceback.format_exc())
@@ -103,7 +103,7 @@ class ConfigParser:
 
     def get_trackers(self) -> list[str]:
         """
-        Getter for the tracker list
+        Getter for the tracker list.
         """
         return self.trackers
 
@@ -138,8 +138,8 @@ class ConfigParser:
 
     def read_config_content(self) -> dict:
         """
-         Read and parse the YAML configuration file.
-         """
+        Read and parse the YAML configuration file.
+        """
         try:
             with open(self.config_path, "r") as file:
                 return yaml.safe_load(file)
@@ -154,7 +154,10 @@ class ConfigParser:
 
     def _add_to_list_in_dict(self, dictionary: dict, key: str, value: ModelConfig) -> None:
         """
-        Add a value to a list in a dictionary. Create the list if it doesn't exist.
+        Add a value to a list in a dictionary.
+
+        Create the list if it doesn't exist.
+
         """
         dictionary.setdefault(key, []).append(value)
 

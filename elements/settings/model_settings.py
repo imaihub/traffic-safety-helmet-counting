@@ -7,9 +7,11 @@ import torch.nn
 @dataclass
 class ModelSettings:
     """
-    Stored the model related settings. These are the parameters that actually get used in the application
-    """
+    Stored the model related settings.
 
+    These are the parameters that actually get used in the application
+
+    """
     def __init__(self) -> None:
         self.reset: bool = False
         self.model: Optional[torch.nn.Module] = None

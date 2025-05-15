@@ -5,9 +5,8 @@ from elements.settings.params.param_settings import ParamSetting
 
 class BPPSetting(ParamSetting):
     """
-    Changes the expect bit per pixel when a user changes the value using the DropDown menu
+    Changes the expect bit per pixel when a user changes the value using the DropDown menu.
     """
-
     def __init__(self, general_settings: GeneralSettings, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings

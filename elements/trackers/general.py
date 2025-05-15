@@ -1,11 +1,10 @@
-
 from elements.trackers.tracker_processor import TrackerProcessor
 
 
 class GeneralizedProcessor(TrackerProcessor):
     def update_tracks(self, active_tracks: list, verbose: bool = True) -> bool:
         """
-        Uses the custom Track objects to keep a list of which instances have been counted already
+        Uses the custom Track objects to keep a list of which instances have been counted already.
         """
         save_image: bool = False
         for track in active_tracks:

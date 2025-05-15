@@ -6,19 +6,14 @@ from elements.settings.params.param_settings import ParamSetting
 
 class NormalizeTypeSetting(ParamSetting):
     """
-    Changes the normalization method used in the preprocessing step. Can be changed in the GUI
+    Changes the normalization method used in the preprocessing step.
     """
-
     def __init__(self, general_settings: GeneralSettings, locker: Locker):
         super().__init__(locker)
         self.general_settings = general_settings
 
     def update(self, normalize_type: str) -> None:
-        normalize_map = {
-            NormalizeType.IMAGE_NET.name.lower(): NormalizeType.IMAGE_NET,
-            NormalizeType.YOLO.name.lower(): NormalizeType.YOLO,
-            NormalizeType.SCALED_IMAGE_NET.name.lower(): NormalizeType.SCALED_IMAGE_NET
-        }
+        normalize_map = {NormalizeType.IMAGE_NET.name.lower(): NormalizeType.IMAGE_NET, NormalizeType.YOLO.name.lower(): NormalizeType.YOLO, NormalizeType.SCALED_IMAGE_NET.name.lower(): NormalizeType.SCALED_IMAGE_NET}
 
         with self.locker.lock:
             key = normalize_type.lower()
