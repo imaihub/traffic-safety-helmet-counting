@@ -4,6 +4,8 @@ from argparse import ArgumentParser
 
 import gradio as gr
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 from elements.enums import Tasks, InputMode
 from elements.settings.general_settings import GeneralSettings
 from elements.settings.model_settings import ModelSettings
@@ -12,8 +14,6 @@ from elements.settings.tracking_settings import TrackingSettings
 from gradio_server.injections.css_injection import css_injection
 from gradio_server.injections.js_injection import js_injection
 from gradio_server.model_manager import ModelManager
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 parser = ArgumentParser(description='')
 parser.add_argument('--type', type=str, default='tracking')

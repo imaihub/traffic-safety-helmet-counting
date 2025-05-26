@@ -43,7 +43,9 @@ conda create -n bikehelmets python=3.12
 
 Activate the newly created environment using the command:
 
-``conda activate bikehelmets``
+```bash
+conda activate bikehelmets
+```
 
 ## Installing Required Packages
 
@@ -54,19 +56,11 @@ Ensure you're in the repository's root directory in your terminal, then run:
 pip install -r requirements.txt
 ```
 
-If you are on Windows and wish to use the GPU for the processing, you have to install torch using the following instructions from https://pytorch.org/get-started/locally/:
-
-```bash
-# Boxmot requires these versions of PyTorch
-pip install torch==2.2.2 torchvision==0.17.2 torchaudio==2.2.2 --index-url https://download.pytorch.org/whl/cu121
-```
-
 # Demo Overview
 
 ## Gradio Demo
 
 Gradio allows you to interact with the machine learning model through a web interface. It's user-friendly and does not require coding knowledge.
-Running the Gradio Demo
 
 Navigate to the Gradio directory in your terminal, and run the demo script:
 
@@ -115,20 +109,20 @@ If you want an analysis of a video file, add an --input argument pointing to the
 python cli.py --input /path/to/video.mp4
 ```
 
-Below is a list of the relevant arguments. Some arguments are flags, others need a value, specified by the italic value after the argument.
+Below is a list of the relevant arguments. Some arguments are flags, others need a value. The flags are indicated with italic typing.
 
 General:
-- --realistic: Help ease down the processing speed to make the resulting video seem realistic, in case of very good hardware
-- --gpu: Use GPU for processing, else the CPU is used
+- --*realistic*: Help ease down the processing speed to make the resulting video seem realistic, in case of very good hardware
+- --*gpu*: Use GPU for processing, else the CPU is used
 - --screen-width: Screen width in pixels for visualization, standard 1920
 - --screen-height: Screen height in pixels for visualization, standard 1080
 
 Camera:
-- --camera-mode: Use USB webcam/camera as input
+- --*camera-mode*: Use USB webcam/camera as input
 - --camera-index: Index of camera to use, -1 is automatic discovery
-- --save-all-frames: Save all raw frames from camera as separate .png files
-- --save-results: Construct an .mp4 file with all processed images
-- --save-new-objects: Save all frames with new objects as .png files
+- --*save-all-frames*: Save all raw frames from camera as separate .png files
+- --*save-results*: Construct an .mp4 file with all processed images
+- --*save-new-objects*: Save all frames with new objects as .png files
 - --reset-stats-min: Automatically reset counts every x minutes
 
 File input:
