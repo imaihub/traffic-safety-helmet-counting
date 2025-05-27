@@ -16,5 +16,5 @@ class ModelSettings:
         self.reset: bool = False
         self.model: Optional[torch.nn.Module] = None
         self.architecture: Optional[str] = None
-        self.device: str = "cuda:0"
+        self.device: str = "cpu"
         self.weights_path: Optional[str] = None

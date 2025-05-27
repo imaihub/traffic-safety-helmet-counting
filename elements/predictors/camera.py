@@ -1,3 +1,4 @@
+import os
 import time
 import traceback
 
@@ -28,7 +29,7 @@ class PredictorTrackerCamera(PredictorBase):
         Processes a single passed image.
         """
         try:
-            with VideoCapture(camera_index=self.general_settings.camera_index, save_directory=self.general_settings.output_folder) as video_capture:
+            with VideoCapture(camera_index=self.general_settings.camera_index, save_directory=os.path.join(self.general_settings.output_folder, "output", "raw_frames")) as video_capture:
                 if video_capture.vidcap is None:
                     self.logger.error("No video capture available, aborting processing")
                     self.abort()

@@ -1,6 +1,7 @@
 import os
 import shutil
 import time
+from datetime import datetime
 
 import cv2
 import numpy as np
@@ -19,7 +20,8 @@ class ResultSaver:
         self.logger = Logger.setup_logger()
         self.local_output_folder = "output"
         self.output_folder = output_folder
-        self.out_file: str = os.path.join(self.output_folder, "output", "videos", f"{time.time()}.mp4")
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        self.out_file: str = os.path.join(self.output_folder, "output", "videos", f"{timestamp}.mp4")
         self.out_video = None
         self.frame_size = None
         self.initialize_folder()
@@ -45,8 +47,9 @@ class ResultSaver:
         """
         Save an image to the output folder.
         """
-        self.logger.info(f"Saving image to {os.path.join(self.output_folder, 'output', 'images', f'{time.time()}.png')}")
-        cv2.imwrite(filename=os.path.join(self.output_folder, "output", "images", f"{time.time()}.png"), img=image)
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        self.logger.info(f"Saving image to {os.path.join(self.output_folder, 'output', 'images', f'{timestamp}.png')}")
+        cv2.imwrite(filename=os.path.join(self.output_folder, "output", "images", f"{timestamp}.png"), img=image)
 
     def initiate_result_video(self, width: int, height: int, fps: float) -> None:
         """

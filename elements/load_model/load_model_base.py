@@ -12,7 +12,7 @@ class LoadModel(ABC):
     """
     def __init__(self, weights_file: str, num_classes: int = 1, device: str = "cuda"):
         self.logger = Logger.setup_logger()
-        self.base_path = getattr(sys, '_MEIPASS', "")
+        self.base_path = ""
         self.weights_file = weights_file
         self.device = device
         self.num_classes = num_classes

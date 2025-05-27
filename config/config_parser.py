@@ -1,6 +1,5 @@
 import glob
 import os
-import sys
 import traceback
 from typing import Optional
 
@@ -16,7 +15,7 @@ class ConfigParser:
     """
     def __init__(self, template: Optional[str] = None):
         self.logger = Logger.setup_logger()
-        self.base_path = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
+        self.base_path = os.path.abspath(os.path.dirname(__file__))
         self.config_path = os.path.join(self.base_path, 'config.yaml')
         self.weight_extensions = ["ckpt", "pth", "pt"]
         self.all_configs: list[ModelConfig] = []

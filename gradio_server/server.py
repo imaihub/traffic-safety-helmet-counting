@@ -3,8 +3,10 @@ import sys
 from argparse import ArgumentParser
 
 import gradio as gr
+import torch
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+os.chdir(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from elements.enums import Tasks, InputMode
 from elements.settings.general_settings import GeneralSettings
@@ -53,7 +55,7 @@ if Tasks.TRACKING.name.casefold() in args.type.casefold():
                     model_architectures = gr.Dropdown(choices=[config.architecture for config in config.task_type_models[args.type]], label="Model architectures", value=model_settings.architecture, interactive=True)
                     weights = gr.Radio(label="Model weights", interactive=True, choices=[a_config.weights for a_config in config.all_configs if a_config.architecture == config.current_config.architecture], value=config.current_config.weights)
                     bit_box = gr.Dropdown(choices=["6", "8", "10", "12", "14", "16"], label="Bit", interactive=True, value=str(general_settings.bpp), visible=False)
-                    device_box = gr.Dropdown(choices=["cpu", "cuda:0"], label="Device", interactive=True, value=str(model_settings.device))
+                    device_box = gr.Dropdown(choices=["cpu", "cuda:0"] if torch.cuda.is_available() else ["cpu"], label="Device", interactive=True, value=str(model_settings.device))
 
                     width_input_box = gr.Text(label="Width input model", interactive=True, visible=general_settings.advanced_view)
                     height_input_box = gr.Text(label="Height input model", interactive=True, visible=general_settings.advanced_view)

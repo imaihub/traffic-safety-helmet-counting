@@ -1,5 +1,6 @@
 import os
-import time
+import shutil
+from datetime import datetime
 from typing import Self, Iterator
 
 import cv2
@@ -52,7 +53,7 @@ def get_webcam_settings(camera_index: int = -1, verbose: bool = False) -> cv2.Vi
 
     if camera_index < 0:
         # Determine usable camera index first
-        for i in reversed(range(4)):
+        for i in range(4):
             cap = cv2.VideoCapture(i)
 
             ok, frame = cap.read()
@@ -98,10 +99,11 @@ class VideoCapture:
     """
     A VideoCapture instance is responsible for reading images from the webcam and returning it frame for frame in a generator method.
     """
-    def __init__(self, camera_index: int = 0, save_directory: str = "output"):
+    def __init__(self, camera_index: int = 0, save_directory: str = os.path.join("output", "raw_frames")):
         self.logger = Logger.setup_logger()
         self.vidcap = get_webcam_settings(camera_index=camera_index, verbose=True)
-        self.save_folder = os.path.join(save_directory, str(time.time()))
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        self.save_folder = os.path.join(save_directory, timestamp)
         os.makedirs(self.save_folder, exist_ok=True)
 
     def __enter__(self) -> Self:
@@ -125,3 +127,18 @@ class VideoCapture:
     def release(self) -> None:
         if isinstance(self.vidcap, cv2.VideoCapture):
             self.vidcap.release()
+        self._remove_empty_save_folder()
+
+    def _remove_empty_save_folder(self) -> None:
+        """
+        Removes the save folder if it is empty.
+        """
+        # Check if the folder is empty
+        if not os.listdir(self.save_folder):
+            try:
+                shutil.rmtree(self.save_folder)
+                self.logger.info(f"Removed empty folder: {self.save_folder}")
+            except Exception as e:
+                self.logger.error(f"Error while removing empty folder: {self.save_folder}. Error: {e}")
+        else:
+            self.logger.info(f"The folder {self.save_folder} is not empty, skipping removal.")

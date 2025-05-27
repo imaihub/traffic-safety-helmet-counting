@@ -1,4 +1,4 @@
---extra-index-url https://download.pytorch.org/whl/cu126
+--extra-index-url https://download.pytorch.org/whl/cu121
 albucore==0.0.24 
 albumentations==2.0.7 
 boxmot==12.0.2 
@@ -14,9 +14,9 @@ pybase64==1.4.1
 scikit-learn==1.6.1 
 scipy==1.15.3 
 supervision==0.25.1 
-tensorboard==2.19.0 
-torch==2.2.2 
-torchvision==0.17.2 
+tensorboard==2.19.0
+torch==2.2.2
+torchvision==0.17.2
 ultralytics==8.3.145 
 yolov5==7.0.13 
 
