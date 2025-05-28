@@ -25,6 +25,17 @@ yolov10:
       tracked_classes:
         - helmet
         - cyclist
+    yolov10_tracker2.pt:
+      classes:
+        - helmet
+        - cyclist
+        - headwear
+      showed_classes:
+        - helmet
+        - cyclist
+      tracked_classes:
+        - helmet
+        - cyclist
 
 yolov11:
   version: m

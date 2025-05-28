@@ -52,7 +52,7 @@ if Tasks.TRACKING.name.casefold() in args.type.casefold():
                     camera_button = gr.Button(value="Set to camera mode", interactive=True)
                     advanced_view = gr.Checkbox(label="Advanced mode", interactive=True, value=general_settings.advanced_view)
                     output_folder = gr.Text(label="Output folder for the tracking results", value=general_settings.output_folder, interactive=False)
-                    model_architectures = gr.Dropdown(choices=[config.architecture for config in config.task_type_models[args.type]], label="Model architectures", value=model_settings.architecture, interactive=True)
+                    model_architectures = gr.Dropdown(choices=list(set([config.architecture for config in config.task_type_models[args.type]])), label="Model architectures", value=model_settings.architecture, interactive=True)
                     weights = gr.Radio(label="Model weights", interactive=True, choices=[a_config.weights for a_config in config.all_configs if a_config.architecture == config.current_config.architecture], value=config.current_config.weights)
                     bit_box = gr.Dropdown(choices=["6", "8", "10", "12", "14", "16"], label="Bit", interactive=True, value=str(general_settings.bpp), visible=False)
                     device_box = gr.Dropdown(choices=["cpu", "cuda:0"] if torch.cuda.is_available() else ["cpu"], label="Device", interactive=True, value=str(model_settings.device))
