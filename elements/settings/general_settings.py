@@ -38,5 +38,5 @@ class GeneralSettings:
         self.normalize_type: Optional[NormalizeType] = None
         self.advanced_view: bool = False
         self.realistic_processing: bool = True
-        self.box_threshold: float = 0.6
+        self.box_threshold: float = 0.4
         self.output_folder: str = os.path.join(Path.home(), "Downloads")

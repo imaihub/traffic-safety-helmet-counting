@@ -11,7 +11,7 @@ yolov10:
   input_height: 736
 
   bpp: 8
-  box_threshold: 0.6
+  box_threshold: 0.4
 
   weights:
     yolov10_tracker.pt:
@@ -49,7 +49,7 @@ yolov11:
   input_height: 736
 
   bpp: 8
-  box_threshold: 0.6
+  box_threshold: 0.4
 
   weights:
     yolov11_tracker.pt:
@@ -69,4 +69,4 @@ trackers:
 templates:
   bikehelmets:
     architecture: yolov10
-    weights: yolov10_tracker.pt
+    weights: yolov10_tracker2.pt
