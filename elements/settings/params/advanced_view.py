@@ -14,7 +14,7 @@ class AdvancedViewSetting(ParamSetting):
 
     Visible Field                  | Condition
     -------------------------------|--------------------------------------------------------------
-    Realistic Processing             | camera_mode == InputMode.FILE
+    Realistic Processing             | input_mode == InputMode.VIDEO_FILE
     Box threshold
     Detection threshold            | advanced_view == True
     Minimum hits                   | advanced_view == True
@@ -45,7 +45,7 @@ class AdvancedViewSetting(ParamSetting):
                 width_input_box = gr.Text(label="Width input model", value=self.general_settings.input_width, interactive=True, visible=advanced_view)
                 height_input_box = gr.Text(label="Height input model", value=self.general_settings.input_height, interactive=True, visible=advanced_view)
 
-            realistic_processing_box = gr.Checkbox(label="Slow down processing", interactive=True, value=self.general_settings.realistic_processing, visible=True if self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold() and self.general_settings.camera_mode == InputMode.FILE else False)
+            realistic_processing_box = gr.Checkbox(label="Slow down processing", interactive=True, value=self.general_settings.realistic_processing, visible=True if self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold() and self.general_settings.input_mode == InputMode.VIDEO_FILE else False)
             box_threshold_box = gr.Text(label="Box threshold", interactive=True, value=str(self.general_settings.box_threshold), visible=True)
             gamma_correction_bool_box = gr.Checkbox(label="Gamma correction", interactive=True, value=self.general_settings.gamma_correction_bool, visible=advanced_view and not self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold())
             gamma_correction_value_box = gr.Text(label="Gamma value", interactive=True, value=str(self.general_settings.gamma_correction_value), visible=advanced_view and not self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold())

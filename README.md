@@ -91,10 +91,10 @@ Run the CLI script with
 python cli.py
 ```
 
-If you want a local camera feed, add the argument --camera-mode like:
+If you want a local camera feed, set the argument --input to be "camera" like:
 
 ```bash
-python cli.py --camera-mode
+python cli.py --input camera
 ```
 
 Note: If it does not work on Linux, make sure to install v4l-utils with:
@@ -103,11 +103,10 @@ Note: If it does not work on Linux, make sure to install v4l-utils with:
 sudo apt install v4l-utils
 ```
 
-If you want an analysis of a video file, add an --input argument pointing to the video file like:
-
-```bash
-python cli.py --input /path/to/video.mp4
-```
+Besides using your camera as a feed, you can also use the following:
+- RTSP stream, specify the URL as the --input argument
+- Images from folder (recursively), specify absolute path to images as the --input argument
+- Video file, specify the video file as the --input argument
 
 Below is a list of the relevant arguments. Some arguments are flags, others need a value. The flags are indicated with italic typing.
 
@@ -116,17 +115,15 @@ General:
 - --*gpu*: Use GPU for processing, else the CPU is used
 - --screen-width: Screen width in pixels for visualization, standard 1920
 - --screen-height: Screen height in pixels for visualization, standard 1080
-
-Camera:
-- --*camera-mode*: Use USB webcam/camera as input
-- --camera-index: Index of camera to use, -1 is automatic discovery
-- --*save-all-frames*: Save all raw frames from camera as separate .png files
 - --*save-results*: Construct an .mp4 file with all processed images
 - --*save-new-objects*: Save all frames with new objects as .png files
 - --reset-stats-min: Automatically reset counts every x minutes
 
-File input:
-- --input: Use video file as input, looks in dataset folder only. So first copy file there and put the file name as an argument
+Camera (requires --input to be "camera"):
+- --camera-index: Index of camera to use, -1 is automatic discovery
+- --*save-all-frames*: Save all raw frames from camera as separate .png files
+
+To quit the application, press "q".
 
 Here is an example of what you will see:
 

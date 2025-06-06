@@ -19,6 +19,9 @@ class Display:
 
         """
         cv2.imshow(self.window_name, cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            cv2.destroyAllWindows()
+            exit(0)
         cv2.waitKey(1)
 
     def close(self) -> None:

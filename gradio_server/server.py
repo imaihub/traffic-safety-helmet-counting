@@ -37,7 +37,7 @@ config = model_manager.get_parsed_config()
 setting_orchestrator = SettingsOrchestrator(model_manager=model_manager)
 setting_orchestrator.initialize_values(config=config.current_config)
 
-setting_orchestrator.camera_mode_setting.update(InputMode.FILE)  # On default, the GUI is suitable for video input mode
+setting_orchestrator.input_mode_setting.update(InputMode.VIDEO_FILE)  # On default, the GUI is suitable for video input mode
 setting_orchestrator.screen_dimension_setting.update(width=args.screen_width, height=args.screen_height)
 
 model_manager.start_websocket_server()
@@ -69,7 +69,7 @@ if Tasks.TRACKING.name.casefold() in args.type.casefold():
                     realistic_processing_box = gr.Checkbox(label="Slow down processing", interactive=True, value=general_settings.realistic_processing, visible=True)
                     realistic_processing_box.change(setting_orchestrator.realistic_processing_setting.update, inputs=realistic_processing_box)
 
-                    save_all_frames_box = gr.Checkbox(label="Save raw frames as .png files", interactive=True, value=general_settings.save_all_frames, visible=general_settings.camera_mode == InputMode.CAMERA)
+                    save_all_frames_box = gr.Checkbox(label="Save raw frames as .png files", interactive=True, value=general_settings.save_all_frames, visible=general_settings.input_mode == InputMode.CAMERA)
                     save_all_frames_box.change(setting_orchestrator.save_all_frames_setting.update, inputs=save_all_frames_box)
 
                     save_results_box = gr.Checkbox(label="Construct an .mp4 file with processed frames", interactive=True, value=general_settings.save_results)
@@ -81,7 +81,7 @@ if Tasks.TRACKING.name.casefold() in args.type.casefold():
                     gamma_correction_bool_box = gr.Checkbox(label="Gamma correction", interactive=True, value=general_settings.gamma_correction_bool, visible=False)
                     gamma_correction_value_box = gr.Text(label="Gamma value", interactive=True, value=str(general_settings.gamma_correction_value), visible=False)
 
-                    camera_index_box = gr.Dropdown(choices=["-1", "0", "1", "2", "3"], label="Camera index (-1 is automatic detection)", interactive=True, value=str(general_settings.camera_index), visible=general_settings.camera_mode == InputMode.CAMERA)
+                    camera_index_box = gr.Dropdown(choices=["-1", "0", "1", "2", "3"], label="Camera index (-1 is automatic detection)", interactive=True, value=str(general_settings.camera_index), visible=general_settings.input_mode == InputMode.CAMERA)
                     camera_index_box.change(setting_orchestrator.camera_index_setting.update, inputs=camera_index_box)
 
                 with gr.Column():
@@ -110,7 +110,7 @@ if Tasks.TRACKING.name.casefold() in args.type.casefold():
                 input_image_box.upload(fn=model_manager.predict_gui, inputs=[input_image_box], outputs=[analysis_button, reset_tracker_stats_button, camera_button]).then(model_manager.await_analysis, outputs=[input_image_box, analysis_button, reset_tracker_stats_button, camera_button])
 
         analysis_button.click(model_manager.toggle_analysis, outputs=[analysis_button, reset_tracker_stats_button])
-        camera_button.click(model_manager.switch_camera_mode, outputs=[camera_button, input_image_box, analysis_button, reset_tracker_stats_button, save_all_frames_box, camera_index_box])
+        camera_button.click(model_manager.switch_input_mode, outputs=[camera_button, input_image_box, analysis_button, reset_tracker_stats_button, save_all_frames_box, camera_index_box])
         reset_tracker_stats_button.click(model_manager.reset_tracker)
 
         advanced_view.change(

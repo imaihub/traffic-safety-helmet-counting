@@ -4,7 +4,7 @@ from elements.settings.params.architecture import ArchitectureSetting
 from elements.settings.params.box_threshold import BoxThresholdSetting
 from elements.settings.params.bpp import BPPSetting
 from elements.settings.params.camera import CameraIndexSetting
-from elements.settings.params.camera_mode import CameraModeSetting
+from elements.settings.params.input_mode import InputModeSetting
 from elements.settings.params.classes import ClassesSetting
 from elements.settings.params.device import DeviceSetting
 from elements.settings.params.gamma_correction import GammaCorrectionBoolSetting, GammaCorrectionValueSetting
@@ -60,7 +60,7 @@ class SettingsOrchestrator:
         self.tracker_option_3_setting = TrackerOption3Settings(general_settings=model_manager.general_settings, tracking_settings=model_manager.tracking_settings, locker=model_manager.locker)
         self.tracker_option_4_setting = TrackerOption4Settings(general_settings=model_manager.general_settings, tracking_settings=model_manager.tracking_settings, locker=model_manager.locker)
 
-        self.camera_mode_setting = CameraModeSetting(general_settings=model_manager.general_settings, locker=model_manager.locker)
+        self.input_mode_setting = InputModeSetting(general_settings=model_manager.general_settings, locker=model_manager.locker)
         self.output_folder_setting = OutputFolderSetting(general_settings=model_manager.general_settings, locker=model_manager.locker)
         self.normalize_type_setting = NormalizeTypeSetting(general_settings=model_manager.general_settings, locker=model_manager.locker)
 

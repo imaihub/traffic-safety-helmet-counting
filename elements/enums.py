@@ -24,10 +24,12 @@ class NormalizeType(Enum):
 
 class InputMode(Enum):
     """
-    Different modes of tracking, either video file input or camera feed input.
+    Different modes of tracking
     """
     CAMERA = 0
-    FILE = 1
+    VIDEO_FILE = 1
+    IMAGES = 2
+    RTSP = 3
 
 
 class ApplicationMode(Enum):

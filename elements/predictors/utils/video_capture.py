@@ -114,11 +114,13 @@ class VideoCapture:
         i: int = 0
         while success:
             yield image
-            success, image = self.vidcap.read()
             if general_settings.save_all_frames:
-                logger.info(f"Saving frame to {os.path.join(self.save_folder, f'frame{str(i)}.png')}")
-                cv2.imwrite(os.path.join(self.save_folder, f"frame{str(i)}.png"), image)
-                i += 1
+                filename = f"frame{str(i).zfill(5)}.png"
+                filepath = os.path.join(self.save_folder, filename)
+                logger.info(f"Saving frame to {filepath}")
+                cv2.imwrite(filepath, image)
+            success, image = self.vidcap.read()
+            i += 1
         return None
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:

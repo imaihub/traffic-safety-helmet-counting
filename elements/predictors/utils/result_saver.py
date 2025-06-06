@@ -24,6 +24,7 @@ class ResultSaver:
         self.out_file: str = os.path.join(self.output_folder, "output", "videos", f"{timestamp}.mp4")
         self.out_video = None
         self.frame_size = None
+        self.frames_saved = 0
         self.initialize_folder()
 
     def __enter__(self) -> 'ResultSaver':
@@ -73,10 +74,17 @@ class ResultSaver:
         self.logger.info("Appending image to video")
         self.out_video.write(cv2.resize(image, self.frame_size))
 
+        self.frames_saved += 1
+
     def save_copy_video(self) -> str:
         """
         Copies the fully analyzed video to a local directory.
         """
+        if self.frames_saved == 0:
+            self.logger.info("Removing resulting video file as it is empty")
+            os.remove(self.out_file)
+            return ""
+
         local_cache_copy = os.path.join(self.local_output_folder, "videos", os.path.basename(self.out_file))
         shutil.copy(src=self.out_file, dst=local_cache_copy)
         self.logger.info(f"Saving video to: {local_cache_copy}")

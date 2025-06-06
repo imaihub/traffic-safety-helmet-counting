@@ -51,7 +51,7 @@ class PredictorBase(ABC):
 
         if self.general_settings.reset_stats_min > 0:
             self.cycling_timer = CyclingTimer(name="Reset stats timer", minutes=self.general_settings.reset_stats_min, fn=self.update_settings, locker=self.locker)
-            self.t = threading.Thread(target=self.cycling_timer.start)
+            self.t = threading.Thread(target=self.cycling_timer.start, daemon=True)
             self.t.start()
 
         self.predictor, self.box_processor, self.result_saver, self.combine_boxes = self.initialize_helpers()

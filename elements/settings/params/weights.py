@@ -28,7 +28,7 @@ class WeightsSetting(ParamSetting):
         :param weights_path: The name of the weights file
 
         """
-        with self.locker.lock if not (self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold() and self.general_settings.camera_mode == InputMode.CAMERA) else contextlib.nullcontext():
+        with self.locker.lock if not (self.general_settings.task_type.casefold() == Tasks.TRACKING.name.casefold() and self.general_settings.input_mode == InputMode.CAMERA) else contextlib.nullcontext():
             self.config_parser.update_current_config(architecture=self.model_settings.architecture, weights=weights_path)
 
             self.logger.info(f"Changed weights from {str(self.model_settings.weights_path)} to {str(weights_path)}")

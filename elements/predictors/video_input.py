@@ -32,7 +32,7 @@ class PredictorTrackerInput(PredictorBase):
             if self.general_settings.application_mode == ApplicationMode.GUI:
                 self.wait_for_websocket()
 
-            with VideoReader(self.predictor_parameters.input_path) as video_reader:
+            with VideoReader(input_path=self.predictor_parameters.input_path, input_mode=self.general_settings.input_mode) as video_reader:
                 self.result_saver.initiate_result_video(width=self.general_settings.screen_width, height=self.general_settings.screen_height, fps=video_reader.fps)
 
                 with self.result_saver:

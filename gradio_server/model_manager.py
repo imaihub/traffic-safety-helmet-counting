@@ -82,44 +82,44 @@ class ModelManager:
         """
         self.reset_tracker()
 
-        if self.general_settings.camera_mode == InputMode.CAMERA:
+        if self.general_settings.input_mode == InputMode.CAMERA:
             if self.analyzing:
                 self.analyzing = False
                 self.predictor.abort()
                 return [gr.Button(interactive=True, value="Start camera analysis"), gr.Button(interactive=True, value="Reset tracker stats", visible=False)]
             else:
                 self.analyzing = True
-                self.analysis_thread = threading.Thread(target=self.predict, args=(None, ))
+                self.analysis_thread = threading.Thread(target=self.predict, args=(None, ), daemon=True)
                 self.analysis_thread.start()
                 return [gr.Button(interactive=True, value="Stop camera analysis"), gr.Button(interactive=True, value="Reset tracker stats", visible=True)]
         else:
             self.predictor.abort()
             return [gr.Button(interactive=True, value="Cancel processing"), gr.Button(interactive=True, value="Reset tracker stats", visible=True)]
 
-    def switch_camera_mode(self) -> list[gr.Component]:
+    def switch_input_mode(self) -> list[gr.Component]:
         """
         Changes the mode of the application, updates GUI accordingly.
         """
-        if self.general_settings.camera_mode == InputMode.FILE:
-            self.general_settings.camera_mode = InputMode.CAMERA
+        if self.general_settings.input_mode == InputMode.VIDEO_FILE:
+            self.general_settings.input_mode = InputMode.CAMERA
             return [
                 gr.Button(value="Set to file mode", interactive=True),
                 gr.File(label="Input video", elem_id="video_in", visible=False),
                 gr.Button(value="Start camera analysis", visible=True),
                 gr.Button(interactive=True, value="Reset tracker stats", visible=False),
-                gr.Checkbox(label="Save raw frames as .png files", interactive=True, value=self.general_settings.save_all_frames, visible=self.general_settings.camera_mode == InputMode.CAMERA),
-                gr.Dropdown(choices=["-1", "0", "1", "2", "3"], label="Camera index (-1 is automatic detection)", interactive=True, value=str(self.general_settings.camera_index), visible=self.general_settings.camera_mode == InputMode.CAMERA)
+                gr.Checkbox(label="Save raw frames as .png files", interactive=True, value=self.general_settings.save_all_frames, visible=self.general_settings.input_mode == InputMode.CAMERA),
+                gr.Dropdown(choices=["-1", "0", "1", "2", "3"], label="Camera index (-1 is automatic detection)", interactive=True, value=str(self.general_settings.camera_index), visible=self.general_settings.input_mode == InputMode.CAMERA)
             ]
 
         else:
-            self.general_settings.camera_mode = InputMode.FILE
+            self.general_settings.input_mode = InputMode.VIDEO_FILE
             return [
                 gr.Button(value="Set to camera input mode", interactive=True),
                 gr.File(label="Input video", elem_id="video_in", visible=True),
                 gr.Button(value="Cancel processing", visible=False),
                 gr.Button(interactive=True, value="Reset tracker stats", visible=False),
-                gr.Checkbox(label="Save raw frames as .png files", interactive=True, value=self.general_settings.save_all_frames, visible=self.general_settings.camera_mode == InputMode.CAMERA),
-                gr.Dropdown(choices=["-1", "0", "1", "2", "3"], label="Camera index (-1 is automatic detection)", interactive=True, value=str(self.general_settings.camera_index), visible=self.general_settings.camera_mode == InputMode.CAMERA)
+                gr.Checkbox(label="Save raw frames as .png files", interactive=True, value=self.general_settings.save_all_frames, visible=self.general_settings.input_mode == InputMode.CAMERA),
+                gr.Dropdown(choices=["-1", "0", "1", "2", "3"], label="Camera index (-1 is automatic detection)", interactive=True, value=str(self.general_settings.camera_index), visible=self.general_settings.input_mode == InputMode.CAMERA)
             ]
 
     def await_analysis(self) -> list[Union[gr.Component, None]]:
@@ -142,7 +142,7 @@ class ModelManager:
         This way the processing does not freeze the application
 
         """
-        self.analysis_thread = threading.Thread(target=self.predict, args=(input_path, ))
+        self.analysis_thread = threading.Thread(target=self.predict, args=(input_path, ), daemon=True)
         self.analysis_thread.start()
         return [gr.Button(interactive=True, value="Cancel processing", visible=True), gr.Button(interactive=True, value="Reset tracker stats", visible=True), gr.Button(value="Set to camera mode", interactive=False)]
 

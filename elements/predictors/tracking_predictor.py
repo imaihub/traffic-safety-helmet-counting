@@ -38,7 +38,7 @@ class PredictTracking(PredictorFactory):
 
         predictor_parameters = PredictorParameters(result_processor=decode_yolo_boxes_pt, tracker_processor=tracker_processor, display=self.display, skip_frames=self.skip_frames, input_path=self.input_path)
 
-        if self.general_settings.camera_mode == InputMode.CAMERA:
+        if self.general_settings.input_mode == InputMode.CAMERA:
             predictor = PredictorTrackerCamera(general_settings=self.general_settings, model_settings=self.model_settings, tracking_settings=self.tracking_settings, predictor_parameters=predictor_parameters, websocket_server=self.websocket_server, locker=self.locker)
         else:
             predictor = PredictorTrackerInput(general_settings=self.general_settings, model_settings=self.model_settings, tracking_settings=self.tracking_settings, predictor_parameters=predictor_parameters, websocket_server=self.websocket_server, locker=self.locker)

@@ -15,7 +15,7 @@ class GeneralSettings:
         self.task_type: Optional[str] = None
         self.mean: Optional[list] = None
         self.std: Optional[list] = None
-        self.camera_mode: InputMode = InputMode.FILE
+        self.input_mode: InputMode = InputMode.VIDEO_FILE
         self.application_mode: ApplicationMode = ApplicationMode.GUI
         self.tracked_classes: list = []
         self.classes: list = []
